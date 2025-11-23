@@ -5,9 +5,10 @@ import { useAuthStore } from '@/stores/auth'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Menu, LayoutDashboard, Users, CheckSquare, FileText, Settings, LogOut, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { Menu, LayoutDashboard, Users, CheckSquare, FileText, Settings, LogOut, ChevronLeft, ChevronRight, User, Smile, Cat, Dog, Ghost, Bot, Zap, Star } from 'lucide-vue-next'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import LanguageToggle from '@/components/LanguageToggle.vue'
+import VelumLogo from '@/components/icons/VelumLogo.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -15,6 +16,11 @@ const route = useRoute()
 const authStore = useAuthStore()
 const isCollapsed = ref(false)
 const showUserMenu = ref(false)
+const isMobileMenuOpen = ref(false)
+
+const avatarMap: Record<string, any> = {
+  User, Smile, Cat, Dog, Ghost, Bot, Zap, Star
+}
 
 const navigation = [
   { name: 'nav.dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -36,28 +42,35 @@ const toggleSidebar = () => {
 <template>
   <div class="min-h-screen bg-background flex flex-col">
     <header class="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6">
-      <Sheet>
+      <Sheet v-model:open="isMobileMenuOpen">
         <SheetTrigger as-child>
           <Button variant="outline" size="icon" class="shrink-0 md:hidden">
             <Menu class="h-5 w-5" />
-            <span class="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
         <SheetContent side="left" class="w-[250px] sm:w-[300px]">
           <nav class="grid gap-6 text-lg font-medium">
-            <RouterLink to="#" class="flex items-center gap-2 text-lg font-semibold">
-              <span class="sr-only">Velum Admin</span>
-              Velum Admin
+            <RouterLink to="#" class="flex items-center gap-2 text-lg font-semibold" @click="isMobileMenuOpen = false">
+              <VelumLogo class="h-6 w-6" />
+              <span class="sr-only">{{ t('app.adminTitle') }}</span>
+              {{ t('app.adminTitle') }}
             </RouterLink>
             <RouterLink v-for="item in navigation" :key="item.name" :to="item.href"
               class="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              :class="{ 'text-foreground': route.path === item.href }">
+              :class="{ 'text-foreground': route.path === item.href }" @click="isMobileMenuOpen = false">
               <component :is="item.icon" class="h-5 w-5" />
               {{ t(item.name) }}
             </RouterLink>
           </nav>
         </SheetContent>
       </Sheet>
+
+      <!-- Desktop Logo -->
+      <RouterLink to="/" class="hidden md:flex items-center gap-2 font-semibold mr-4 min-w-[180px]">
+        <VelumLogo class="h-6 w-6" />
+        <span class="truncate">{{ t('app.adminTitle') }}</span>
+      </RouterLink>
+
       <div class="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <div class="ml-auto flex-1 sm:flex-initial">
           <!-- Search or other header items -->
@@ -69,7 +82,11 @@ const toggleSidebar = () => {
           <Button variant="ghost" class="relative h-8 w-8 rounded-full" @click="showUserMenu = !showUserMenu">
             <Avatar class="h-8 w-8">
               <AvatarImage src="" alt="@user" />
-              <AvatarFallback>{{ authStore.user?.username?.substring(0, 2).toUpperCase() || 'A' }}</AvatarFallback>
+              <AvatarFallback>
+                <component v-if="authStore.user?.avatar && avatarMap[authStore.user.avatar]"
+                  :is="avatarMap[authStore.user.avatar]" class="h-5 w-5" />
+                <span v-else>{{ authStore.user?.username?.substring(0, 2).toUpperCase() || 'A' }}</span>
+              </AvatarFallback>
             </Avatar>
           </Button>
 
@@ -106,13 +123,7 @@ const toggleSidebar = () => {
     <div class="flex flex-1">
       <aside class="hidden flex-col border-r bg-background md:flex transition-all duration-300"
         :class="isCollapsed ? 'w-[60px]' : 'w-[250px]'">
-        <div class="flex items-center justify-end p-2">
-          <Button variant="ghost" size="icon" @click="toggleSidebar" class="h-6 w-6">
-            <ChevronLeft v-if="!isCollapsed" class="h-4 w-4" />
-            <ChevronRight v-else class="h-4 w-4" />
-          </Button>
-        </div>
-        <nav class="grid items-start gap-2 p-2 text-sm font-medium">
+        <nav class="flex flex-col gap-2 p-2 text-sm font-medium flex-1">
           <RouterLink v-for="item in navigation" :key="item.name" :to="item.href"
             class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
             :class="{ 'bg-muted text-primary': route.path === item.href, 'justify-center': isCollapsed }">
@@ -120,6 +131,12 @@ const toggleSidebar = () => {
             <span v-if="!isCollapsed">{{ t(item.name) }}</span>
           </RouterLink>
         </nav>
+        <div class="flex items-center justify-end p-2 border-t">
+          <Button variant="ghost" size="icon" @click="toggleSidebar" class="h-6 w-6">
+            <ChevronLeft v-if="!isCollapsed" class="h-4 w-4" />
+            <ChevronRight v-else class="h-4 w-4" />
+          </Button>
+        </div>
       </aside>
       <main class="flex-1 p-4 md:p-6">
         <RouterView />

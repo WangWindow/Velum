@@ -41,9 +41,11 @@ const isComplete = computed(() => {
   <div class="h-full">
     <!-- List View -->
     <div v-if="!store.currentAssessment" class="space-y-6">
-      <div>
-        <h2 class="text-3xl font-bold tracking-tight">{{ t('assessment.title') }}</h2>
-        <p class="text-muted-foreground">{{ t('assessment.description') }}</p>
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-3xl font-bold tracking-tight">{{ t('assessment.title') }}</h2>
+          <p class="text-muted-foreground">{{ t('assessment.description') }}</p>
+        </div>
       </div>
 
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -30,9 +30,11 @@ const navigateToAssessment = () => {
 
 <template>
   <div class="space-y-6">
-    <div>
-      <h1 class="text-3xl font-bold">{{ t('dashboard.title') }}</h1>
-      <p class="text-muted-foreground">{{ t('dashboard.welcome') }}</p>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight">{{ t('dashboard.title') }}</h2>
+        <p class="text-muted-foreground">{{ t('dashboard.welcome') }}</p>
+      </div>
     </div>
 
     <div class="grid gap-6 md:grid-cols-2">
@@ -77,11 +79,11 @@ const navigateToAssessment = () => {
             <Clock class="h-5 w-5" />
             {{ t('dashboard.recentActivity') }}
           </CardTitle>
-          <CardDescription>Your recent assessment history.</CardDescription>
+          <CardDescription>{{ t('dashboard.recentHistoryDesc') }}</CardDescription>
         </CardHeader>
         <CardContent>
           <div v-if="myAssessments.length === 0" class="text-center py-6 text-muted-foreground">
-            No history available.
+            {{ t('dashboard.noHistory') }}
           </div>
           <div v-else class="space-y-4">
             <div v-for="assessment in myAssessments" :key="assessment.id"
@@ -92,7 +94,7 @@ const navigateToAssessment = () => {
               </div>
               <div class="text-right">
                 <p class="font-bold text-lg">{{ assessment.score }}</p>
-                <p class="text-xs text-muted-foreground">Score</p>
+                <p class="text-xs text-muted-foreground">{{ t('assessment.score') }}</p>
               </div>
             </div>
           </div>

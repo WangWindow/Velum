@@ -10,6 +10,7 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public string? Email { get; set; }
     public string? FullName { get; set; }
+    public string? Avatar { get; set; }
     public UserRoleType Role { get; set; } = UserRoleType.User;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastLogin { get; set; }

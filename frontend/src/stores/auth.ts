@@ -4,9 +4,11 @@ import { useRouter } from 'vue-router'
 import api from '@/lib/api'
 
 export interface User {
+  id?: number
   username: string
   fullName?: string
   email?: string
+  avatar?: string
 }
 
 export interface AuthState {
@@ -72,6 +74,32 @@ export const useAuthStore = defineStore('auth', () => {
     router.push('/login')
   }
 
+  async function updateProfile(updatedUser: Partial<User>) {
+    if (!user.value || !user.value.id) return false
+    try {
+      // We need to send the full user object or at least what the backend expects.
+      // The backend UpdateUser expects a User object and checks ID.
+      // It updates Email, FullName, Avatar, Role.
+      // We should probably fetch the latest user data first or merge with current.
+
+      const payload = {
+        ...user.value,
+        ...updatedUser,
+        id: user.value.id
+      }
+
+      await api.put(`/users/${user.value.id}`, payload)
+
+      // Update local state
+      user.value = { ...user.value, ...updatedUser }
+      localStorage.setItem('user', JSON.stringify(user.value))
+      return true
+    } catch (error) {
+      console.error('Update profile failed:', error)
+      return false
+    }
+  }
+
   return {
     token,
     role,
@@ -80,6 +108,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAdmin,
     login,
     register,
-    logout
+    logout,
+    updateProfile
   }
 })

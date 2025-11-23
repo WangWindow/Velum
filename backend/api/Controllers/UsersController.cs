@@ -67,6 +67,7 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
 
         existingUser.Email = user.Email;
         existingUser.FullName = user.FullName;
+        existingUser.Avatar = user.Avatar;
         existingUser.Role = user.Role;
 
         // Only update password if provided and not empty (assuming frontend sends plain text for new password)

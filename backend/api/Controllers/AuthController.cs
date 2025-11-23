@@ -30,9 +30,11 @@ public class AuthController(IAuthService authService) : ControllerBase
             Role = user!.Role,
             User = new UserDto
             {
+                Id = user.Id,
                 Username = user.Username,
                 FullName = user.FullName,
-                Email = user.Email
+                Email = user.Email,
+                Avatar = user.Avatar
             }
         });
     }
@@ -76,9 +78,11 @@ public class LoginResponse
 
 public class UserDto
 {
+    public int Id { get; set; }
     public required string Username { get; set; }
     public string? FullName { get; set; }
     public string? Email { get; set; }
+    public string? Avatar { get; set; }
 }
 
 public class MessageResponse

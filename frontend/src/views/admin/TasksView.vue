@@ -60,10 +60,10 @@ const handleAssign = async () => {
 </script>
 
 <template>
-  <div class="container mx-auto p-6 space-y-6">
+  <div class="space-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-3xl font-bold tracking-tight">{{ t('tasks.title') }}</h1>
+        <h2 class="text-3xl font-bold tracking-tight">{{ t('tasks.title') }}</h2>
         <p class="text-muted-foreground">{{ t('tasks.description') }}</p>
       </div>
 

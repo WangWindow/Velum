@@ -40,7 +40,11 @@ const messages = {
       title: 'Settings',
       description: 'Manage your account settings and preferences.',
       language: 'Language',
-      theme: 'Theme'
+      theme: 'Theme',
+      avatar: 'Avatar',
+      avatarDesc: 'Select an avatar from the library.',
+      avatarUpdated: 'Avatar Updated',
+      avatarUpdatedDesc: 'Your profile avatar has been updated successfully.'
     },
     dashboard: {
       title: 'Dashboard',
@@ -58,7 +62,9 @@ const messages = {
       completedAssessments: 'Completed Assessments',
       systemHealth: 'System Health',
       overview: 'Overview',
-      recentActivityDesc: 'Recent system activities.'
+      recentActivityDesc: 'Recent system activities.',
+      recentHistoryDesc: 'Your recent assessment history.',
+      noHistory: 'No history available.'
     },
     users: {
       title: 'User Management',
@@ -120,7 +126,8 @@ const messages = {
       submitting: 'Submitting...',
       submitted: 'Assessment submitted successfully!',
       submittedDesc: 'Your assessment has been submitted successfully.',
-      exit: 'Exit'
+      exit: 'Exit',
+      score: 'Score'
     },
     chat: {
       title: 'AI Assistant',
@@ -172,6 +179,10 @@ const messages = {
       registrationFailed: 'Registration failed',
       loginFailed: 'Login failed',
       loginFailedDesc: 'Please check your credentials and try again.'
+    },
+    app: {
+      userTitle: 'Velum User',
+      adminTitle: 'Velum Admin'
     }
   },
   zh: {
@@ -213,7 +224,11 @@ const messages = {
       title: '设置',
       description: '管理您的帐户设置和首选项。',
       language: '语言',
-      theme: '主题'
+      theme: '主题',
+      avatar: '头像',
+      avatarDesc: '从库中选择一个头像。',
+      avatarUpdated: '头像已更新',
+      avatarUpdatedDesc: '您的个人资料头像已成功更新。'
     },
     dashboard: {
       title: '仪表盘',
@@ -231,7 +246,9 @@ const messages = {
       completedAssessments: '已完成评估',
       systemHealth: '系统健康度',
       overview: '概览',
-      recentActivityDesc: '最近的系统活动。'
+      recentActivityDesc: '最近的系统活动。',
+      recentHistoryDesc: '您的近期评估历史。',
+      noHistory: '暂无历史记录。'
     },
     users: {
       title: '用户管理',
@@ -293,7 +310,8 @@ const messages = {
       submitting: '提交中...',
       submitted: '评估提交成功！',
       submittedDesc: '您的评估已成功提交。',
-      exit: '退出'
+      exit: '退出',
+      score: '得分'
     },
     chat: {
       title: 'AI 助手',
@@ -345,6 +363,10 @@ const messages = {
       registrationFailed: '注册失败',
       loginFailed: '登录失败',
       loginFailedDesc: '请检查您的凭据并重试。'
+    },
+    app: {
+      userTitle: 'Velum 用户端',
+      adminTitle: 'Velum 管理端'
     }
   }
 }

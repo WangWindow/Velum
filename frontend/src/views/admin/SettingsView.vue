@@ -14,9 +14,11 @@ const changeLanguage = (val: string) => {
 
 <template>
   <div class="space-y-6">
-    <div>
-      <h3 class="text-lg font-medium">{{ t('settings.title') }}</h3>
-      <p class="text-sm text-muted-foreground">{{ t('settings.description') }}</p>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight">{{ t('settings.title') }}</h2>
+        <p class="text-muted-foreground">{{ t('settings.description') }}</p>
+      </div>
     </div>
     <div class="grid gap-6">
       <Card>
