@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/api/">
+    <Project Path="api/Velum.Api.csproj" />
+  </Folder>
+  <Folder Name="/core/">
+    <Project Path="core/Velum.Core.csproj" />
+  </Folder>
+  <Folder Name="/infrastructure/">
+    <Project Path="infrastructure/Velum.Infrastructure.csproj" />
+  </Folder>
+</Solution>
