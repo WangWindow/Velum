@@ -5,7 +5,7 @@
   <Folder Name="/core/">
     <Project Path="core/Velum.Core.csproj" />
   </Folder>
-  <Folder Name="/infrastructure/">
-    <Project Path="infrastructure/Velum.Infrastructure.csproj" />
-  </Folder>
+    <Folder Name="/base/">
+      <Project Path="base/Velum.Base.csproj" />
+    </Folder>
 </Solution>

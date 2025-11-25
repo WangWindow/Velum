@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\core\Velum.Core.csproj" />
-    <ProjectReference Include="..\infrastructure\Velum.Infrastructure.csproj" />
+    <ProjectReference Include="..\base\Velum.Base.csproj" />
   </ItemGroup>
 
   <ItemGroup>

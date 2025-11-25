@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Velum.Core.Interfaces;
-using Velum.Infrastructure.Data;
+using Velum.Base.Data;
 
-namespace Velum.Infrastructure.Services;
+namespace Velum.Base.Services;
 
 public class DashboardService(ApplicationDbContext context) : IDashboardService
 {

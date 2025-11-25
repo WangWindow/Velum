@@ -1,5 +1,5 @@
 using Velum.Core.Interfaces;
-using Velum.Infrastructure.Data;
+using Velum.Base.Data;
 
 namespace Velum.Api.Workers;
 

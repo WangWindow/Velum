@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Velum.Api.Workers;
 using Velum.Core.Interfaces;
-using Velum.Infrastructure.Configuration;
-using Velum.Infrastructure.Data;
-using Velum.Infrastructure.Services;
+using Velum.Base.Configuration;
+using Velum.Base.Data;
+using Velum.Base.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

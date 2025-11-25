@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Velum.Core.Models;
-using Velum.Infrastructure.Data;
+using Velum.Base.Data;
 
 namespace Velum.Api.Controllers;
 

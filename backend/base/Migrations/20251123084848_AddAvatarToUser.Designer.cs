@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Velum.Infrastructure.Data;
+using Velum.Base.Data;
 
 #nullable disable
 
-namespace Velum.Infrastructure.Migrations
+namespace Velum.Base.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251122171824_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251123084848_AddAvatarToUser")]
+    partial class AddAvatarToUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -133,6 +133,9 @@ namespace Velum.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");

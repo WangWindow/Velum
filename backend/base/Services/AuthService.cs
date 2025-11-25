@@ -7,9 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using Velum.Core.Enums;
 using Velum.Core.Interfaces;
 using Velum.Core.Models;
-using Velum.Infrastructure.Data;
+using Velum.Base.Data;
 
-namespace Velum.Infrastructure.Services;
+namespace Velum.Base.Services;
 
 public class AuthService(ApplicationDbContext context, IConfiguration configuration) : IAuthService
 {

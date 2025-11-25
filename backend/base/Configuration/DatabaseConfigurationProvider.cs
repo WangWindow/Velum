@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Velum.Core.Models;
-using Velum.Infrastructure.Data;
+using Velum.Base.Data;
 
-namespace Velum.Infrastructure.Configuration;
+namespace Velum.Base.Configuration;
 
 public class DatabaseConfigurationSource(Action<DbContextOptionsBuilder> optionsAction) : IConfigurationSource
 {

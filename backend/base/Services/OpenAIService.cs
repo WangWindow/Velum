@@ -5,7 +5,7 @@ using OpenAI.Chat;
 
 using Velum.Core.Interfaces;
 
-namespace Velum.Infrastructure.Services;
+namespace Velum.Base.Services;
 
 public class OpenAIService : IOpenAIService
 {

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Velum.Infrastructure.Migrations
+namespace Velum.Base.Migrations
 {
     /// <inheritdoc />
     public partial class AddAvatarToUser : Migration

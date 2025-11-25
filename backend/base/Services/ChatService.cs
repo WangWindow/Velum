@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Velum.Core.Enums;
 using Velum.Core.Interfaces;
 using Velum.Core.Models;
-using Velum.Infrastructure.Data;
+using Velum.Base.Data;
 
-namespace Velum.Infrastructure.Services;
+namespace Velum.Base.Services;
 
 public class ChatService(ApplicationDbContext context, IOpenAIService openAIService) : IChatService
 {

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Velum.Core.Enums;
 using Velum.Core.Models;
 
-namespace Velum.Infrastructure.Data;
+namespace Velum.Base.Data;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
