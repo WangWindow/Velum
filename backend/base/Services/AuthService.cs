@@ -4,10 +4,10 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Velum.Base.Data;
 using Velum.Core.Enums;
 using Velum.Core.Interfaces;
 using Velum.Core.Models;
-using Velum.Base.Data;
 
 namespace Velum.Base.Services;
 
@@ -72,7 +72,7 @@ public class AuthService(ApplicationDbContext context, IConfiguration configurat
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-            new Claim(ClaimTypes.Role, user.Role.ToString().ToLowerInvariant()),
+            new Claim("role", user.Role.ToString().ToLowerInvariant()),
             new Claim("UserId", user.Id.ToString())
         };
 

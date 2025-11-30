@@ -14,7 +14,7 @@ public class TasksController(ITaskService taskService) : ControllerBase
 
     // Admin: Get all tasks
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public async Task<ActionResult<IEnumerable<UserTask>>> GetTasks()
     {
         var tasks = await _taskService.GetAllTasksAsync();
@@ -36,7 +36,7 @@ public class TasksController(ITaskService taskService) : ControllerBase
 
     // Admin: Assign task
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public async Task<ActionResult<UserTask>> AssignTask([FromBody] AssignTaskRequest request)
     {
         var task = await _taskService.AssignTaskAsync(request.UserId, request.QuestionnaireId, request.DueDate);

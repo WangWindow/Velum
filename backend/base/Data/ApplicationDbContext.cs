@@ -18,13 +18,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.Entity<User>()
             .Property(u => u.Role)
             .HasConversion(
-                v => v.ToString(),
+                v => v.ToString().ToLowerInvariant(),
                 v => Enum.Parse<UserRoleType>(v, true));
 
         modelBuilder.Entity<ChatMessage>()
             .Property(m => m.Role)
             .HasConversion(
-                v => v.ToString(),
+                v => v.ToString().ToLowerInvariant(),
                 v => Enum.Parse<ChatRoleType>(v, true));
     }
 }

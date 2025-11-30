@@ -2,9 +2,9 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Velum.Base.Data;
 using Velum.Core.Interfaces;
 using Velum.Core.Models;
-using Velum.Base.Data;
 
 namespace Velum.Api.Controllers;
 
@@ -36,7 +36,7 @@ public class QuestionnaireController(ApplicationDbContext context, IOpenAIServic
     }
 
     [HttpPost("parse")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public async Task<ActionResult<QuestionnaireTemplate>> ParseQuestionnaire([FromBody] ParseRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Text))
@@ -58,7 +58,7 @@ public class QuestionnaireController(ApplicationDbContext context, IOpenAIServic
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public async Task<ActionResult<Questionnaire>> CreateQuestionnaire(QuestionnaireTemplate template)
     {
         var questionnaire = new Questionnaire
@@ -77,7 +77,7 @@ public class QuestionnaireController(ApplicationDbContext context, IOpenAIServic
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> UpdateQuestionnaire(int id, QuestionnaireTemplate template)
     {
         var questionnaire = await _context.Questionnaires.FindAsync(id);
@@ -97,7 +97,7 @@ public class QuestionnaireController(ApplicationDbContext context, IOpenAIServic
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteQuestionnaire(int id)
     {
         var questionnaire = await _context.Questionnaires.FindAsync(id);

@@ -132,7 +132,8 @@ const toggleSidebar = () => {
           </RouterLink>
         </nav>
         <div class="flex items-center justify-end p-2 border-t">
-          <Button variant="ghost" size="icon" @click="toggleSidebar" class="h-6 w-6">
+          <Button variant="ghost" size="icon" @click="toggleSidebar"
+            class="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary w-full justify-center">
             <ChevronLeft v-if="!isCollapsed" class="h-4 w-4" />
             <ChevronRight v-else class="h-4 w-4" />
           </Button>

@@ -7,7 +7,7 @@ export interface User {
   username: string
   email?: string
   fullName?: string
-  role: 'User' | 'Admin'
+  role: 'user' | 'admin'
   createdAt: string
   lastLogin?: string
 }

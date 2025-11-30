@@ -6,7 +6,7 @@ namespace Velum.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "admin")]
 public class DashboardController(IDashboardService dashboardService) : ControllerBase
 {
     private readonly IDashboardService _dashboardService = dashboardService;

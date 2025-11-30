@@ -24,7 +24,6 @@ const changeLanguage = (val: string) => {
       <Card>
         <CardHeader>
           <CardTitle>{{ t('settings.language') }}</CardTitle>
-          <CardDescription>Select your preferred language.</CardDescription>
         </CardHeader>
         <CardContent>
           <div class="flex items-center space-x-4">
@@ -45,7 +44,6 @@ const changeLanguage = (val: string) => {
       <Card>
         <CardHeader>
           <CardTitle>{{ t('settings.theme') }}</CardTitle>
-          <CardDescription>Select your preferred theme.</CardDescription>
         </CardHeader>
         <CardContent>
           <div class="flex items-center space-x-4">

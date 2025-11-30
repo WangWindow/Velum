@@ -15,8 +15,7 @@ public static class SeedData
 
         var users = new List<User>
         {
-            new User
-            {
+            new() {
                 Username = "admin",
                 PasswordHash = "admin123", // In real app, hash this
                 Email = "admin@velum.com",
@@ -24,8 +23,7 @@ public static class SeedData
                 Role = UserRoleType.Admin,
                 CreatedAt = DateTime.UtcNow
             },
-            new User
-            {
+            new() {
                 Username = "user",
                 PasswordHash = "user123",
                 Email = "user@velum.com",

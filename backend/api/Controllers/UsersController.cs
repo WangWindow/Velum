@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Velum.Core.Models;
 using Velum.Base.Data;
+using Velum.Core.Models;
 
 namespace Velum.Api.Controllers;
 
@@ -14,7 +14,7 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
     private readonly ApplicationDbContext _context = context;
 
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
         return await _context.Users.ToListAsync();
@@ -34,7 +34,7 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public async Task<ActionResult<User>> CreateUser(User user)
     {
         if (_context.Users.Any(u => u.Username == user.Username))

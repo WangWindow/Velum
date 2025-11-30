@@ -17,7 +17,7 @@ const router = createRouter({
       path: '/user',
       name: 'user',
       component: () => import('@/layouts/UserLayout.vue'),
-      meta: { requiresAuth: true, role: 'User' },
+      meta: { requiresAuth: true, role: 'user' },
       children: [
         {
           path: 'dashboard',
@@ -45,7 +45,7 @@ const router = createRouter({
       path: '/admin',
       name: 'admin',
       component: () => import('@/layouts/AdminLayout.vue'),
-      meta: { requiresAuth: true, role: 'Admin' },
+      meta: { requiresAuth: true, role: 'admin' },
       children: [
         {
           path: 'dashboard',
@@ -91,7 +91,7 @@ router.beforeEach((to, _from, next) => {
     next('/login')
   } else if (requiresAuth && requiredRole && authStore.role !== requiredRole) {
     // Redirect to appropriate dashboard if role doesn't match
-    if (authStore.role === 'Admin') {
+    if (authStore.role === 'admin') {
       next('/admin/dashboard')
     } else {
       next('/user/dashboard')

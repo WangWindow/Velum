@@ -13,19 +13,19 @@ export interface User {
 
 export interface AuthState {
   token: string | null
-  role: 'User' | 'Admin' | null
+  role: 'user' | 'admin' | null
   user: User | null
 }
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'))
-  const role = ref<'User' | 'Admin' | null>(localStorage.getItem('role') as 'User' | 'Admin' | null)
+  const role = ref<'user' | 'admin' | null>(localStorage.getItem('role') as 'user' | 'admin' | null)
   const user = ref<User | null>(JSON.parse(localStorage.getItem('user') || 'null'))
 
   const router = useRouter()
 
   const isAuthenticated = computed(() => !!token.value)
-  const isAdmin = computed(() => role.value === 'Admin')
+  const isAdmin = computed(() => role.value === 'admin')
 
   async function login(username: string, password: string) {
     try {
@@ -33,15 +33,15 @@ export const useAuthStore = defineStore('auth', () => {
       const data = response.data
 
       token.value = data.token
-      role.value = data.role
+      role.value = data.role?.toLowerCase()
       user.value = data.user
 
       localStorage.setItem('token', data.token)
-      localStorage.setItem('role', data.role)
+      localStorage.setItem('role', data.role?.toLowerCase())
       localStorage.setItem('user', JSON.stringify(data.user))
 
       // Redirect based on role
-      if (role.value === 'Admin') {
+      if (role.value === 'admin') {
         router.push('/admin/dashboard')
       } else {
         router.push('/user/dashboard')
