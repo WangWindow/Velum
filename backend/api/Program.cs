@@ -3,11 +3,10 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Velum.Api.Workers;
-using Velum.Core.Interfaces;
 using Velum.Base.Configuration;
 using Velum.Base.Data;
 using Velum.Base.Services;
+using Velum.Core.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +18,7 @@ if (!string.IsNullOrEmpty(connectionString))
         options.UseSqlite(connectionString)));
 }
 
-builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -31,8 +30,6 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAssessmentService, AssessmentService>();
-
-builder.Services.AddHostedService<AnalysisWorker>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
