@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Velum.Base.Data;
 using Velum.Core.Interfaces;
 using Velum.Core.Models;
-using Velum.Base.Data;
 
 namespace Velum.Base.Services;
 
@@ -46,5 +46,15 @@ public class TaskService(ApplicationDbContext context) : ITaskService
         await _context.Entry(task).Reference(t => t.Questionnaire).LoadAsync();
 
         return task;
+    }
+
+    public async Task<bool> DeleteTaskAsync(int id)
+    {
+        var task = await _context.UserTasks.FindAsync(id);
+        if (task == null) return false;
+
+        _context.UserTasks.Remove(task);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

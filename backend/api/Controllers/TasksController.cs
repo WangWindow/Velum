@@ -42,6 +42,15 @@ public class TasksController(ITaskService taskService) : ControllerBase
         var task = await _taskService.AssignTaskAsync(request.UserId, request.QuestionnaireId, request.DueDate);
         return CreatedAtAction(nameof(GetTasks), new { id = task.Id }, task);
     }
+
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> DeleteTask(int id)
+    {
+        var success = await _taskService.DeleteTaskAsync(id);
+        if (!success) return NotFound();
+        return NoContent();
+    }
 }
 
 

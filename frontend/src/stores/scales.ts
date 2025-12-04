@@ -24,9 +24,38 @@ export interface QuestionnaireTemplate {
 
 export const useScalesStore = defineStore('scales', () => {
   const parsedTemplate = ref<QuestionnaireTemplate | null>(null)
+  const scales = ref<any[]>([])
   const isAnalyzing = ref(false)
   const isSaving = ref(false)
+  const isLoading = ref(false)
   const error = ref<string | null>(null)
+
+  async function fetchScales() {
+    isLoading.value = true
+    try {
+      const response = await api.get('/questionnaire')
+      scales.value = response.data
+    } catch (err) {
+      console.error('Failed to fetch scales:', err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function deleteScale(id: number) {
+    isLoading.value = true
+    try {
+      await api.delete(`/questionnaire/${id}`)
+      scales.value = scales.value.filter(s => s.id !== id)
+      return true
+    } catch (err: any) {
+      console.error('Failed to delete scale:', err)
+      error.value = err.response?.data || 'Failed to delete scale.'
+      return false
+    } finally {
+      isLoading.value = false
+    }
+  }
 
   async function parseScale(text: string) {
     isAnalyzing.value = true
@@ -49,21 +78,34 @@ export const useScalesStore = defineStore('scales', () => {
     error.value = null
     try {
       await api.post('/questionnaire', parsedTemplate.value)
-      parsedTemplate.value = null // Clear after save
+      parsedTemplate.value = null
+      await fetchScales() // Refresh list
+      return true
     } catch (err: any) {
       console.error('Failed to save scale:', err)
       error.value = err.response?.data || 'Failed to save scale.'
+      return false
     } finally {
       isSaving.value = false
     }
   }
 
+  function clear() {
+    parsedTemplate.value = null
+    error.value = null
+  }
+
   return {
     parsedTemplate,
+    scales,
     isAnalyzing,
     isSaving,
+    isLoading,
     error,
+    fetchScales,
+    deleteScale,
     parseScale,
-    saveScale
+    saveScale,
+    clear
   }
 })

@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useTasksStore } from '@/stores/tasks'
 import { storeToRefs } from 'pinia'
-import { Plus } from 'lucide-vue-next'
+import { Plus, Trash2 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 
 import { Button } from '@/components/ui/button'
@@ -56,6 +56,12 @@ const handleAssign = async () => {
   isDialogOpen.value = false
   selectedUserId.value = ''
   selectedQuestionnaireId.value = ''
+}
+
+const handleDeleteTask = async (id: number) => {
+  if (confirm('Are you sure you want to delete this task?')) {
+    await tasksStore.deleteTask(id)
+  }
 }
 </script>
 
@@ -143,6 +149,7 @@ const handleAssign = async () => {
             <TableHead>{{ t('tasks.status') }}</TableHead>
             <TableHead>{{ t('tasks.assignedDate') }}</TableHead>
             <TableHead class="text-right">{{ t('tasks.dueDate') }}</TableHead>
+            <TableHead class="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -161,6 +168,11 @@ const handleAssign = async () => {
             </TableCell>
             <TableCell>{{ new Date(task.assignedAt).toLocaleDateString() }}</TableCell>
             <TableCell class="text-right">{{ task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-' }}
+            </TableCell>
+            <TableCell class="text-right">
+              <Button variant="ghost" size="icon" class="text-destructive" @click="handleDeleteTask(task.id)">
+                <Trash2 class="h-4 w-4" />
+              </Button>
             </TableCell>
           </TableRow>
         </TableBody>

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Velum.Base.Data;
+using Velum.Core.Enums;
 using Velum.Core.Models;
 
 namespace Velum.Api.Controllers;
@@ -35,15 +36,21 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "admin")]
-    public async Task<ActionResult<User>> CreateUser(User user)
+    public async Task<ActionResult<User>> CreateUser(CreateUserRequest request)
     {
-        if (_context.Users.Any(u => u.Username == user.Username))
+        if (_context.Users.Any(u => u.Username == request.Username))
         {
             return BadRequest("Username already exists");
         }
 
-        // Simple password setting for admin creation - in real app use a service to hash
-        // user.PasswordHash = _passwordHasher.Hash(user.PasswordHash);
+        var user = new User
+        {
+            Username = request.Username,
+            PasswordHash = request.Password, // In real app, hash this!
+            Email = request.Email,
+            FullName = request.FullName,
+            Role = Enum.Parse<UserRoleType>(request.Role, true)
+        };
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
@@ -52,30 +59,26 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, User user)
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> UpdateUser(int id, UpdateUserRequest request)
     {
-        if (id != user.Id)
-        {
-            return BadRequest();
-        }
-
         var existingUser = await _context.Users.FindAsync(id);
         if (existingUser == null)
         {
             return NotFound();
         }
 
-        existingUser.Email = user.Email;
-        existingUser.FullName = user.FullName;
-        existingUser.Avatar = user.Avatar;
-        existingUser.Role = user.Role;
+        existingUser.Email = request.Email ?? existingUser.Email;
+        existingUser.FullName = request.FullName ?? existingUser.FullName;
 
-        // Only update password if provided and not empty (assuming frontend sends plain text for new password)
-        // Note: This is a security risk in production without proper hashing.
-        // Assuming the incoming 'user.PasswordHash' contains the new plain text password if changed.
-        if (!string.IsNullOrEmpty(user.PasswordHash) && user.PasswordHash != existingUser.PasswordHash)
+        if (!string.IsNullOrEmpty(request.Role))
         {
-            existingUser.PasswordHash = user.PasswordHash;
+            existingUser.Role = Enum.Parse<UserRoleType>(request.Role, true);
+        }
+
+        if (!string.IsNullOrEmpty(request.Password))
+        {
+            existingUser.PasswordHash = request.Password; // In real app, hash this!
         }
 
         try
@@ -98,6 +101,7 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteUser(int id)
     {
         var user = await _context.Users.FindAsync(id);
@@ -116,4 +120,21 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
     {
         return _context.Users.Any(e => e.Id == id);
     }
+}
+
+public class CreateUserRequest
+{
+    public required string Username { get; set; }
+    public required string Password { get; set; }
+    public string? Email { get; set; }
+    public string? FullName { get; set; }
+    public string Role { get; set; } = "User";
+}
+
+public class UpdateUserRequest
+{
+    public string? Email { get; set; }
+    public string? FullName { get; set; }
+    public string? Role { get; set; }
+    public string? Password { get; set; }
 }
