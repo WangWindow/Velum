@@ -133,6 +133,7 @@ const messages = {
       title: 'AI Assistant',
       clear: 'Clear Chat',
       newChat: 'New Chat',
+      history: 'History',
       recent: 'Recent',
       mode: 'Mode',
       default: 'Default (Managed)',
@@ -144,7 +145,15 @@ const messages = {
       modelName: 'Model Name',
       systemPrompt: 'System Prompt',
       save: 'Save changes',
-      typeMessage: 'Type your message...'
+      typeMessage: 'Type your message...',
+      confirmDelete: 'Are you sure you want to delete this session?',
+      selectMode: 'Select mode',
+      placeholder: {
+        apiUrl: 'https://api.openai.com/v1',
+        apiKey: 'sk-...',
+        model: 'gpt-4o',
+        prompt: 'You are a helpful assistant...'
+      }
     },
     auth: {
       email: 'Email',
@@ -319,6 +328,7 @@ const messages = {
       title: 'AI 助手',
       clear: '清空聊天',
       newChat: '新对话',
+      history: '历史记录',
       recent: '最近对话',
       mode: '模式',
       default: '默认 (托管)',
@@ -330,7 +340,15 @@ const messages = {
       modelName: '模型名称',
       systemPrompt: '系统提示词',
       save: '保存更改',
-      typeMessage: '输入您的消息...'
+      typeMessage: '输入您的消息...',
+      confirmDelete: '确定要删除此会话吗？',
+      selectMode: '选择模式',
+      placeholder: {
+        apiUrl: 'https://api.openai.com/v1',
+        apiKey: 'sk-...',
+        model: 'gpt-4o',
+        prompt: '你是一个有用的助手...'
+      }
     },
     auth: {
       email: '邮箱',

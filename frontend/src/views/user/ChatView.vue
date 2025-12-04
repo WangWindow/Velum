@@ -71,44 +71,44 @@ const saveConfig = () => {
 <template>
   <div class="flex h-[calc(100vh-8rem)] flex-row gap-4 overflow-hidden">
     <!-- Sidebar (Desktop) -->
-    <div class="hidden md:flex flex-col gap-2 border-r transition-all duration-300 ease-in-out overflow-hidden"
-      :class="[isSidebarOpen ? 'w-72 pr-4 opacity-100' : 'w-0 pr-0 opacity-0 border-r-0']">
-      <div class="flex items-center justify-between mb-2">
-        <Button variant="outline" class="flex-1 justify-start gap-2" @click="chatStore.createSession()">
-          <Plus class="h-4 w-4" />
-          {{ t('chat.newChat') }}
-        </Button>
-      </div>
-
-      <div class="flex items-center justify-between px-2 mb-2">
-        <div class="text-xs font-medium text-muted-foreground">{{ t('chat.recent') }}</div>
-        <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground">
-          <MoreHorizontal class="h-4 w-4" />
-        </Button>
-      </div>
-
-      <ScrollArea class="flex-1 -mr-3 pr-3">
-        <div class="flex flex-col gap-1 pb-2">
-          <div v-for="session in chatStore.sessions" :key="session.id"
-            class="group flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent/50 transition-colors cursor-pointer"
-            :class="{ 'bg-secondary text-foreground': chatStore.currentSessionId === session.id }"
-            @click="chatStore.selectSession(session.id)">
-            <MessageSquare class="h-4 w-4 text-muted-foreground shrink-0" />
-            <span class="truncate text-sm flex-1 text-muted-foreground group-hover:text-foreground"
-              :class="{ 'text-foreground': chatStore.currentSessionId === session.id }">
-              {{ session.title }}
-            </span>
-            <Button variant="ghost" size="icon"
-              class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-              @click="handleDeleteSession($event, session.id)">
-              <Trash2 class="h-3 w-3" />
-            </Button>
-          </div>
+    <div class="hidden md:flex flex-col border-r transition-all duration-300 ease-in-out overflow-hidden"
+      :class="[isSidebarOpen ? 'w-72' : 'w-0 border-r-0']">
+      <div class="w-72 pr-4 flex flex-col gap-2 h-full">
+        <div class="flex items-center justify-between mb-2">
+          <Button variant="outline" class="flex-1 justify-start gap-2" @click="chatStore.createSession()">
+            <Plus class="h-4 w-4" />
+            {{ t('chat.newChat') }}
+          </Button>
         </div>
-      </ScrollArea>
-    </div>
 
-    <!-- Mobile History Sheet -->
+        <div class="flex items-center justify-between px-2 mb-2">
+          <div class="text-xs font-medium text-muted-foreground">{{ t('chat.recent') }}</div>
+          <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground">
+            <MoreHorizontal class="h-4 w-4" />
+          </Button>
+        </div>
+
+        <ScrollArea class="flex-1 -mr-3 pr-3">
+          <div class="flex flex-col gap-1 pb-2">
+            <div v-for="session in chatStore.sessions" :key="session.id"
+              class="group flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent/50 transition-colors cursor-pointer"
+              :class="{ 'bg-secondary text-foreground': chatStore.currentSessionId === session.id }"
+              @click="chatStore.selectSession(session.id)">
+              <MessageSquare class="h-4 w-4 text-muted-foreground shrink-0" />
+              <span class="truncate text-sm flex-1 text-muted-foreground group-hover:text-foreground"
+                :class="{ 'text-foreground': chatStore.currentSessionId === session.id }">
+                {{ session.title }}
+              </span>
+              <Button variant="ghost" size="icon"
+                class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                @click="handleDeleteSession($event, session.id)">
+                <Trash2 class="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        </ScrollArea>
+      </div>
+    </div> <!-- Mobile History Sheet -->
     <Sheet v-model:open="isMobileHistoryOpen">
       <SheetContent side="left" class="w-[80%] sm:w-[350px] p-0">
         <div class="flex flex-col h-full p-4">
@@ -189,7 +189,7 @@ const saveConfig = () => {
                 <Label>{{ t('chat.mode') }}</Label>
                 <Select v-model="tempConfig.mode">
                   <SelectTrigger>
-                    <SelectValue placeholder="Select mode" />
+                    <SelectValue :placeholder="t('chat.selectMode')" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="default">{{ t('chat.default') }}</SelectItem>
@@ -201,19 +201,20 @@ const saveConfig = () => {
               <template v-if="tempConfig.mode === 'custom'">
                 <div class="grid gap-2">
                   <Label>{{ t('chat.apiUrl') }}</Label>
-                  <Input v-model="tempConfig.customUrl" placeholder="https://api.openai.com/v1" />
+                  <Input v-model="tempConfig.customUrl" :placeholder="t('chat.placeholder.apiUrl')" />
                 </div>
                 <div class="grid gap-2">
                   <Label>{{ t('chat.apiKey') }}</Label>
-                  <Input v-model="tempConfig.customApiKey" type="password" placeholder="sk-..." />
+                  <Input v-model="tempConfig.customApiKey" type="password"
+                    :placeholder="t('chat.placeholder.apiKey')" />
                 </div>
                 <div class="grid gap-2">
                   <Label>{{ t('chat.modelName') }}</Label>
-                  <Input v-model="tempConfig.customModel" placeholder="gpt-4o" />
+                  <Input v-model="tempConfig.customModel" :placeholder="t('chat.placeholder.model')" />
                 </div>
                 <div class="grid gap-2">
                   <Label>{{ t('chat.systemPrompt') }}</Label>
-                  <Textarea v-model="tempConfig.customPrompt" placeholder="You are a helpful assistant..." />
+                  <Textarea v-model="tempConfig.customPrompt" :placeholder="t('chat.placeholder.prompt')" />
                 </div>
               </template>
             </div>
