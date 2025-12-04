@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
-import { Languages } from 'lucide-vue-next'
 import { onMounted } from 'vue'
 
 const { locale } = useI18n()
@@ -22,8 +21,6 @@ const toggleLanguage = () => {
 
 <template>
   <Button variant="ghost" size="icon" class="relative" @click="toggleLanguage" title="Switch Language">
-    <Languages class="h-[1.2rem] w-[1.2rem]" />
-    <span class="sr-only">Toggle language</span>
-    <span class="absolute -bottom-1 right-0 text-[10px] font-bold">{{ locale.toUpperCase() }}</span>
+    <span class="h-[1.2rem] w-[1.2rem]">{{ locale.toUpperCase() }}</span>
   </Button>
 </template>

@@ -27,5 +27,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasConversion(
                 v => v.ToString().ToLowerInvariant(),
                 v => Enum.Parse<ChatRoleType>(v, true));
+
+        modelBuilder.Entity<ChatSession>()
+            .HasMany(s => s.Messages)
+            .WithOne(m => m.Session)
+            .HasForeignKey(m => m.SessionId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
