@@ -9,6 +9,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<User> Users { get; set; }
     public DbSet<Questionnaire> Questionnaires { get; set; }
     public DbSet<UserTask> UserTasks { get; set; }
+    public DbSet<ChatSession> ChatSessions { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
     public DbSet<Assessment> Assessments { get; set; }
     public DbSet<AppSetting> AppSettings { get; set; }

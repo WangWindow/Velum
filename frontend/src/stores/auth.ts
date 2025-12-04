@@ -75,20 +75,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function updateProfile(updatedUser: Partial<User>) {
-    if (!user.value || !user.value.id) return false
+    if (!user.value) return false
     try {
-      // We need to send the full user object or at least what the backend expects.
-      // The backend UpdateUser expects a User object and checks ID.
-      // It updates Email, FullName, Avatar, Role.
-      // We should probably fetch the latest user data first or merge with current.
-
-      const payload = {
-        ...user.value,
-        ...updatedUser,
-        id: user.value.id
-      }
-
-      await api.put(`/users/${user.value.id}`, payload)
+      // Use the new profile endpoint
+      await api.put('/users/profile', updatedUser)
 
       // Update local state
       user.value = { ...user.value, ...updatedUser }

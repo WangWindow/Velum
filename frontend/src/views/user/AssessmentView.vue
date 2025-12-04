@@ -4,18 +4,26 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { ArrowLeft, CheckCircle2, PlayCircle } from 'lucide-vue-next'
 import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useRoute } from 'vue-router'
 
 const { t } = useI18n()
 const { toast } = useToast()
+const route = useRoute()
 const store = useAssessmentStore()
 
-onMounted(() => {
-  store.fetchAssessments()
+onMounted(async () => {
+  await store.fetchAssessments()
+  const id = route.query.id
+  if (id) {
+    handleStart(Number(id))
+  }
 })
 
 const handleStart = (id: number) => {
@@ -35,6 +43,20 @@ const handleSubmit = async () => {
 const isComplete = computed(() => {
   return store.progress === 100
 })
+
+const toggleSelection = (questionId: number, value: string) => {
+  const current = store.answers[questionId] || []
+  const currentArr = Array.isArray(current) ? current : []
+
+  const index = currentArr.indexOf(value)
+  if (index === -1) {
+    store.setAnswer(questionId, [...currentArr, value])
+  } else {
+    const newArr = [...currentArr]
+    newArr.splice(index, 1)
+    store.setAnswer(questionId, newArr)
+  }
+}
 </script>
 
 <template>
@@ -101,16 +123,33 @@ const isComplete = computed(() => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <RadioGroup :model-value="store.answers[question.id]?.toString()"
-              @update:model-value="(val: any) => store.setAnswer(question.id, val)">
-              <div v-for="(option, optIdx) in question.options" :key="optIdx"
-                class="flex items-center space-x-2 space-y-1">
-                <RadioGroupItem :id="`q${question.id}-opt${optIdx}`" :value="option.score.toString()" />
+            <div v-if="question.type === 'Text'">
+              <Textarea :model-value="store.answers[question.id]"
+                @update:model-value="(val) => store.setAnswer(question.id, val)"
+                :placeholder="t('scales.placeholder') || 'Type your answer here...'" />
+            </div>
+            <div v-else-if="question.type === 'MultipleChoice'">
+              <div v-for="(option, optIdx) in question.options" :key="optIdx" class="flex items-center space-x-2 py-2">
+                <Checkbox :id="`q${question.id}-opt${optIdx}`"
+                  :checked="Array.isArray(store.answers[question.id]) && store.answers[question.id].includes(option.score.toString())"
+                  @update:checked="() => toggleSelection(question.id, option.score.toString())" />
                 <Label :for="`q${question.id}-opt${optIdx}`" class="font-normal cursor-pointer">
                   {{ option.text }}
                 </Label>
               </div>
-            </RadioGroup>
+            </div>
+            <div v-else>
+              <RadioGroup :model-value="store.answers[question.id]?.toString()"
+                @update:model-value="(val: any) => store.setAnswer(question.id, val)">
+                <div v-for="(option, optIdx) in question.options" :key="optIdx"
+                  class="flex items-center space-x-2 space-y-1">
+                  <RadioGroupItem :id="`q${question.id}-opt${optIdx}`" :value="option.score.toString()" />
+                  <Label :for="`q${question.id}-opt${optIdx}`" class="font-normal cursor-pointer">
+                    {{ option.text }}
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
           </CardContent>
         </Card>
       </div>

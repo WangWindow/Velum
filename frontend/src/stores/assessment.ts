@@ -33,7 +33,7 @@ export const useAssessmentStore = defineStore('assessment', () => {
   const assessments = ref<Questionnaire[]>([])
   const myAssessments = ref<AssessmentResult[]>([])
   const currentAssessment = ref<Questionnaire | null>(null)
-  const answers = ref<Record<number, number>>({})
+  const answers = ref<Record<number, any>>({})
   const loading = ref(false)
   const isSubmitting = ref(false)
   const error = ref<string | null>(null)
@@ -116,7 +116,7 @@ export const useAssessmentStore = defineStore('assessment', () => {
   }
 
   function setAnswer(questionId: number, value: any) {
-    answers.value[questionId] = Number(value)
+    answers.value[questionId] = value
   }
 
   const progress = computed(() => {
@@ -132,7 +132,7 @@ export const useAssessmentStore = defineStore('assessment', () => {
 
     isSubmitting.value = true
     try {
-      const formattedAnswers: Record<string, number> = {}
+      const formattedAnswers: Record<string, any> = {}
       for (const [key, value] of Object.entries(answers.value)) {
         formattedAnswers[key.toString()] = value
       }

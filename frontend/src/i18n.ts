@@ -132,6 +132,8 @@ const messages = {
     chat: {
       title: 'AI Assistant',
       clear: 'Clear Chat',
+      newChat: 'New Chat',
+      recent: 'Recent',
       mode: 'Mode',
       default: 'Default (Managed)',
       custom: 'Custom (BYOK)',
@@ -316,6 +318,8 @@ const messages = {
     chat: {
       title: 'AI 助手',
       clear: '清空聊天',
+      newChat: '新对话',
+      recent: '最近对话',
       mode: '模式',
       default: '默认 (托管)',
       custom: '自定义 (BYOK)',

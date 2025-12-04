@@ -23,8 +23,8 @@ onMounted(() => {
   assessmentStore.fetchMyAssessments()
 })
 
-const navigateToAssessment = () => {
-  router.push('/user/assessment')
+const navigateToAssessment = (questionnaireId: number) => {
+  router.push({ path: '/user/assessment', query: { id: questionnaireId } })
 }
 </script>
 
@@ -63,7 +63,8 @@ const navigateToAssessment = () => {
                 <Badge :variant="task.status === 'Completed' ? 'default' : 'secondary'">
                   {{ task.status }}
                 </Badge>
-                <Button v-if="task.status !== 'Completed'" size="sm" @click="navigateToAssessment">
+                <Button v-if="task.status !== 'Completed'" size="sm"
+                  @click="navigateToAssessment(task.questionnaireId)">
                   Start
                 </Button>
               </div>

@@ -5,6 +5,8 @@ namespace Velum.Core.Models;
 public class ChatMessage
 {
     public int Id { get; set; }
+    public int? SessionId { get; set; }
+    public ChatSession? Session { get; set; }
     public int UserId { get; set; }
     public User? User { get; set; }
     public ChatRoleType Role { get; set; } = ChatRoleType.User;

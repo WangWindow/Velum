@@ -70,6 +70,7 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
 
         existingUser.Email = request.Email ?? existingUser.Email;
         existingUser.FullName = request.FullName ?? existingUser.FullName;
+        existingUser.Avatar = request.Avatar ?? existingUser.Avatar;
 
         if (!string.IsNullOrEmpty(request.Role))
         {
@@ -116,6 +117,49 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
         return NoContent();
     }
 
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile(UpdateUserRequest request)
+    {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null) return Unauthorized();
+        var id = int.Parse(userIdClaim.Value);
+
+        var existingUser = await _context.Users.FindAsync(id);
+        if (existingUser == null)
+        {
+            return NotFound();
+        }
+
+        existingUser.Email = request.Email ?? existingUser.Email;
+        existingUser.FullName = request.FullName ?? existingUser.FullName;
+        existingUser.Avatar = request.Avatar ?? existingUser.Avatar;
+
+        if (!string.IsNullOrEmpty(request.Password))
+        {
+            existingUser.PasswordHash = request.Password; // In real app, hash this!
+        }
+
+        // Users cannot update their own role via this endpoint
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!UserExists(id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NoContent();
+    }
+
     private bool UserExists(int id)
     {
         return _context.Users.Any(e => e.Id == id);
@@ -137,4 +181,5 @@ public class UpdateUserRequest
     public string? FullName { get; set; }
     public string? Role { get; set; }
     public string? Password { get; set; }
+    public string? Avatar { get; set; }
 }
