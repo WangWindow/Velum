@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose
 } from '@/components/ui/dialog'
 import {
   Select,
@@ -42,6 +43,8 @@ const { tasks, users, questionnaires, isLoading } = storeToRefs(tasksStore)
 const isDialogOpen = ref(false)
 const selectedUserId = ref<string>('')
 const selectedQuestionnaireId = ref<string>('')
+const isDeleteDialogOpen = ref(false)
+const taskToDeleteId = ref<number | null>(null)
 
 onMounted(() => {
   tasksStore.fetchTasks()
@@ -58,9 +61,16 @@ const handleAssign = async () => {
   selectedQuestionnaireId.value = ''
 }
 
-const handleDeleteTask = async (id: number) => {
-  if (confirm('Are you sure you want to delete this task?')) {
-    await tasksStore.deleteTask(id)
+const handleDeleteTask = (id: number) => {
+  taskToDeleteId.value = id
+  isDeleteDialogOpen.value = true
+}
+
+const confirmDeleteTask = async () => {
+  if (taskToDeleteId.value) {
+    await tasksStore.deleteTask(taskToDeleteId.value)
+    isDeleteDialogOpen.value = false
+    taskToDeleteId.value = null
   }
 }
 </script>
@@ -140,7 +150,7 @@ const handleDeleteTask = async (id: number) => {
 
     <div class="rounded-md border">
       <Table>
-        <TableCaption>A list of assigned assessment tasks.</TableCaption>
+        <TableCaption>{{ t('tasks.caption') }}</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead class="w-[100px]">{{ t('tasks.id') }}</TableHead>
@@ -149,7 +159,7 @@ const handleDeleteTask = async (id: number) => {
             <TableHead>{{ t('tasks.status') }}</TableHead>
             <TableHead>{{ t('tasks.assignedDate') }}</TableHead>
             <TableHead class="text-right">{{ t('tasks.dueDate') }}</TableHead>
-            <TableHead class="text-right">Actions</TableHead>
+            <TableHead class="text-right">{{ t('common.actions') }}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -178,5 +188,22 @@ const handleDeleteTask = async (id: number) => {
         </TableBody>
       </Table>
     </div>
+
+    <Dialog v-model:open="isDeleteDialogOpen">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{{ t('tasks.deleteTitle') }}</DialogTitle>
+          <DialogDescription>
+            {{ t('tasks.deleteConfirm') }}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose as-child>
+            <Button variant="outline">{{ t('common.cancel') }}</Button>
+          </DialogClose>
+          <Button variant="destructive" @click="confirmDeleteTask">{{ t('common.delete') }}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

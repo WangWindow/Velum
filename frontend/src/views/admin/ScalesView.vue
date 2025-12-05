@@ -24,6 +24,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
+  DialogClose
 } from '@/components/ui/dialog'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -37,6 +39,8 @@ const viewMode = ref<'import' | 'list'>('list')
 const selectedScale = ref<any>(null)
 const isViewDialogOpen = ref(false)
 const isBilingualMode = ref(false)
+const isDeleteDialogOpen = ref(false)
+const scaleToDeleteId = ref<number | null>(null)
 
 onMounted(() => {
   scalesStore.fetchScales()
@@ -83,9 +87,16 @@ const handleClear = () => {
   rawText.value = ''
 }
 
-const handleDelete = async (id: number) => {
-  if (confirm(t('scales.deleteConfirm'))) {
-    await scalesStore.deleteScale(id)
+const handleDelete = (id: number) => {
+  scaleToDeleteId.value = id
+  isDeleteDialogOpen.value = true
+}
+
+const confirmDelete = async () => {
+  if (scaleToDeleteId.value) {
+    await scalesStore.deleteScale(scaleToDeleteId.value)
+    isDeleteDialogOpen.value = false
+    scaleToDeleteId.value = null
   }
 }
 </script>
@@ -291,7 +302,7 @@ const handleDelete = async (id: number) => {
             <TableHead>{{ t('scales.id') }}</TableHead>
             <TableHead>{{ t('scales.columnTitle') }}</TableHead>
             <TableHead>{{ t('scales.columnDescription') }}</TableHead>
-            <TableHead class="text-right">{{ t('scales.actions') }}</TableHead>
+            <TableHead class="text-right">{{ t('common.actions') }}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -345,6 +356,23 @@ const handleDelete = async (id: number) => {
             </AccordionItem>
           </Accordion>
         </div>
+      </DialogContent>
+    </Dialog>
+
+    <Dialog v-model:open="isDeleteDialogOpen">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{{ t('scales.deleteTitle') }}</DialogTitle>
+          <DialogDescription>
+            {{ t('scales.deleteConfirm') }}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose as-child>
+            <Button variant="outline">{{ t('common.cancel') }}</Button>
+          </DialogClose>
+          <Button variant="destructive" @click="confirmDelete">{{ t('common.delete') }}</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   </div>

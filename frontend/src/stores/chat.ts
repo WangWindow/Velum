@@ -91,6 +91,18 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
+  async function updateSession(sessionId: number, title: string) {
+    try {
+      await api.put(`/chat/sessions/${sessionId}`, { title })
+      const session = sessions.value.find(s => s.id === sessionId)
+      if (session) {
+        session.title = title
+      }
+    } catch (error) {
+      console.error('Failed to update session:', error)
+    }
+  }
+
   async function fetchHistory() {
     // Legacy support or load most recent session?
     // Let's load sessions and select the first one if available
@@ -164,6 +176,9 @@ export const useChatStore = defineStore('chat', () => {
         }
         messages.value.push(aiMessage)
 
+        // Get the reactive message object from the array
+        const reactiveAiMessage = messages.value.find(m => m.id === aiMsgId)
+
         const response = await fetch('/api/chat/stream', {
           method: 'POST',
           headers: {
@@ -187,7 +202,9 @@ export const useChatStore = defineStore('chat', () => {
           if (done) break
 
           const chunk = decoder.decode(value, { stream: true })
-          aiMessage.content += chunk
+          if (reactiveAiMessage) {
+            reactiveAiMessage.content += chunk
+          }
         }
       }
     } catch (error) {
@@ -228,6 +245,7 @@ export const useChatStore = defineStore('chat', () => {
     createSession,
     selectSession,
     deleteSession,
+    updateSession,
     sendMessage,
     clearHistory
   }

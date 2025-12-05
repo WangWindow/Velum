@@ -102,7 +102,7 @@ const toggleSelection = (questionId: number, value: string) => {
         </Button>
         <div>
           <h2 class="text-2xl font-bold">{{ store.currentAssessment.title }}</h2>
-          <p class="text-sm text-muted-foreground">Please answer all questions honestly.</p>
+          <p class="text-sm text-muted-foreground">{{ t('assessment.instruction') }}</p>
         </div>
       </div>
 

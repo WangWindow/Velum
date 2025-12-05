@@ -10,17 +10,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose
+} from '@/components/ui/dialog'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
   Send, Settings, User, Bot, Plus, PanelLeftClose, PanelLeftOpen,
-  MessageSquare, Trash2, MoreHorizontal, History
+  MessageSquare, Trash2, MoreHorizontal, History, Pencil, Check
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import MarkdownIt from 'markdown-it'
+import { useToast } from '@/components/ui/toast/use-toast'
+
+const md = new MarkdownIt({
+  html: false,
+  linkify: true,
+  breaks: true
+})
 
 const { t } = useI18n()
+const { toast } = useToast()
 const chatStore = useChatStore()
 const inputMessage = ref('')
 const scrollAreaRef = ref<any>(null)
 const isSidebarOpen = ref(true)
 const isMobileHistoryOpen = ref(false)
+const isDeleteDialogOpen = ref(false)
+const isManageDialogOpen = ref(false)
+const sessionToDeleteId = ref<number | null>(null)
+const selectedSessions = ref<number[]>([])
+const editingSessionId = ref<number | null>(null)
+const editingTitle = ref('')
 
 onMounted(() => {
   chatStore.fetchHistory()
@@ -28,6 +47,48 @@ onMounted(() => {
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
+}
+
+const openManageDialog = () => {
+  isManageDialogOpen.value = true
+  selectedSessions.value = []
+  editingSessionId.value = null
+}
+
+const toggleSessionSelection = (id: number) => {
+  const index = selectedSessions.value.indexOf(id)
+  if (index === -1) {
+    selectedSessions.value.push(id)
+  } else {
+    selectedSessions.value.splice(index, 1)
+  }
+}
+
+const startEditing = (session: any) => {
+  editingSessionId.value = session.id
+  editingTitle.value = session.title
+}
+
+const saveTitle = async (id: number) => {
+  if (editingTitle.value.trim()) {
+    await chatStore.updateSession(id, editingTitle.value)
+    toast({
+      title: t('chat.renamed'),
+      description: t('chat.renamedDesc'),
+    })
+  }
+  editingSessionId.value = null
+}
+
+const deleteSelectedSessions = async () => {
+  for (const id of selectedSessions.value) {
+    await chatStore.deleteSession(id)
+  }
+  selectedSessions.value = []
+  toast({
+    title: t('chat.deleted'),
+    description: t('chat.deletedDesc'),
+  })
 }
 
 const scrollToBottom = async () => {
@@ -50,10 +111,17 @@ const handleSendMessage = async () => {
   await chatStore.sendMessage(content)
 }
 
-const handleDeleteSession = async (e: Event, id: number) => {
+const handleDeleteSession = (e: Event, id: number) => {
   e.stopPropagation()
-  if (confirm(t('chat.confirmDelete'))) {
-    await chatStore.deleteSession(id)
+  sessionToDeleteId.value = id
+  isDeleteDialogOpen.value = true
+}
+
+const confirmDeleteSession = async () => {
+  if (sessionToDeleteId.value) {
+    await chatStore.deleteSession(sessionToDeleteId.value)
+    isDeleteDialogOpen.value = false
+    sessionToDeleteId.value = null
   }
 }
 
@@ -89,7 +157,7 @@ const saveConfig = () => {
 
         <div class="flex items-center justify-between px-2 mb-2">
           <div class="text-xs font-medium text-muted-foreground">{{ t('chat.recent') }}</div>
-          <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground">
+          <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground" @click="openManageDialog">
             <MoreHorizontal class="h-4 w-4" />
           </Button>
         </div>
@@ -103,7 +171,7 @@ const saveConfig = () => {
               <MessageSquare class="h-4 w-4 text-muted-foreground shrink-0" />
               <span class="truncate text-sm flex-1 text-muted-foreground group-hover:text-foreground"
                 :class="{ 'text-foreground': chatStore.currentSessionId === session.id }">
-                {{ session.title }}
+                {{ session.title === 'New Chat' ? t('chat.newChat') : session.title }}
               </span>
               <Button variant="ghost" size="icon"
                 class="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
@@ -128,7 +196,7 @@ const saveConfig = () => {
           </Button>
           <div class="flex items-center justify-between mb-2">
             <div class="text-xs font-medium text-muted-foreground">{{ t('chat.recent') }}</div>
-            <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground">
+            <Button variant="ghost" size="icon" class="h-6 w-6 text-muted-foreground" @click="openManageDialog">
               <MoreHorizontal class="h-4 w-4" />
             </Button>
           </div>
@@ -141,7 +209,7 @@ const saveConfig = () => {
                 <MessageSquare class="h-4 w-4 text-muted-foreground shrink-0" />
                 <span class="truncate text-sm flex-1 text-muted-foreground"
                   :class="{ 'text-foreground': chatStore.currentSessionId === session.id }">
-                  {{ session.title }}
+                  {{ session.title === 'New Chat' ? t('chat.newChat') : session.title }}
                 </span>
                 <Button variant="ghost" size="icon" class="h-8 w-8 text-muted-foreground hover:text-destructive"
                   @click="handleDeleteSession($event, session.id)">
@@ -234,8 +302,8 @@ const saveConfig = () => {
       </div>
 
       <!-- Messages Area -->
-      <ScrollArea ref="scrollAreaRef" class="flex-1 rounded-md border p-4 bg-background/50">
-        <div class="flex flex-col gap-6">
+      <ScrollArea ref="scrollAreaRef" class="flex-1 rounded-md border bg-background/50">
+        <div class="flex flex-col gap-6 p-4">
           <div v-for="msg in chatStore.messages" :key="msg.id" class="flex gap-4 group"
             :class="msg.role === 'user' ? 'flex-row-reverse' : ''">
             <Avatar class="h-8 w-8 mt-1 transition-transform duration-200 group-hover:scale-110 shrink-0">
@@ -245,12 +313,14 @@ const saveConfig = () => {
               </AvatarFallback>
             </Avatar>
             <div
-              class="rounded-2xl px-4 py-2.5 text-sm max-w-[85%] shadow-sm transition-all duration-200 hover:shadow-md leading-relaxed"
-              :class="msg.role === 'user' ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-muted rounded-tl-sm'">
-              {{ msg.content }}
+              class="rounded-2xl px-4 py-2.5 text-sm max-w-[85%] shadow-sm transition-all duration-200 hover:shadow-md leading-relaxed overflow-hidden"
+              :class="msg.role === 'user' ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-muted rounded-tl-sm prose prose-sm dark:prose-invert max-w-none wrap-break-word'">
+              <div v-if="msg.role === 'user'">{{ msg.content }}</div>
+              <div v-else v-html="md.render(msg.content)"></div>
             </div>
           </div>
-          <div v-if="chatStore.isLoading" class="flex gap-4">
+          <div v-if="chatStore.isLoading && chatStore.messages[chatStore.messages.length - 1]?.role !== 'assistant'"
+            class="flex gap-4">
             <Avatar class="h-8 w-8 mt-1">
               <AvatarFallback class="bg-primary text-primary-foreground">
                 <Bot class="h-4 w-4" />
@@ -277,5 +347,71 @@ const saveConfig = () => {
         </Button>
       </div>
     </div>
+
+    <Dialog v-model:open="isDeleteDialogOpen">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{{ t('chat.deleteSessionTitle') || 'Delete Chat' }}</DialogTitle>
+          <DialogDescription>
+            {{ t('chat.confirmDelete') }}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose as-child>
+            <Button variant="outline">{{ t('common.cancel') || 'Cancel' }}</Button>
+          </DialogClose>
+          <Button variant="destructive" @click="confirmDeleteSession">{{ t('common.delete') || 'Delete' }}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Manage Sessions Dialog -->
+    <Dialog v-model:open="isManageDialogOpen">
+      <DialogContent class="sm:max-w-[500px] max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>{{ t('chat.manage') }}</DialogTitle>
+          <DialogDescription>{{ t('chat.manageDesc') }}</DialogDescription>
+        </DialogHeader>
+
+        <div class="flex items-center justify-between py-2">
+          <div class="text-sm text-muted-foreground">
+            {{ selectedSessions.length }} selected
+          </div>
+          <Button variant="destructive" size="sm" :disabled="selectedSessions.length === 0"
+            @click="deleteSelectedSessions">
+            <Trash2 class="mr-2 h-4 w-4" />
+            {{ t('chat.deleteSelected') }}
+          </Button>
+        </div>
+
+        <ScrollArea class="flex-1 -mr-4 pr-4">
+          <div class="space-y-2">
+            <div v-for="session in chatStore.sessions" :key="session.id"
+              class="flex items-center gap-3 rounded-md border p-2">
+              <Checkbox :checked="selectedSessions.includes(session.id)"
+                @update:checked="() => toggleSessionSelection(session.id)" />
+
+              <div class="flex-1 min-w-0">
+                <div v-if="editingSessionId === session.id" class="flex items-center gap-2">
+                  <Input v-model="editingTitle" class="h-8" @keydown.enter="saveTitle(session.id)" auto-focus />
+                  <Button size="icon" variant="ghost" class="h-8 w-8 shrink-0" @click="saveTitle(session.id)">
+                    <Check class="h-4 w-4 text-green-500" />
+                  </Button>
+                </div>
+                <span v-else class="text-sm truncate block">
+                  {{ session.title === 'New Chat' ? t('chat.newChat') : session.title }}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1" v-if="editingSessionId !== session.id">
+                <Button variant="ghost" size="icon" class="h-8 w-8" @click="startEditing(session)">
+                  <Pencil class="h-4 w-4 text-muted-foreground" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

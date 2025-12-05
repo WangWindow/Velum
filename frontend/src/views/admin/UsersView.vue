@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose
 } from '@/components/ui/dialog'
 import {
   Select,
@@ -53,6 +54,8 @@ const editingUser = ref({
   email: '',
   role: 'User' as 'User' | 'Admin'
 })
+const isDeleteDialogOpen = ref(false)
+const userToDeleteId = ref<number | null>(null)
 
 onMounted(() => {
   usersStore.fetchUsers()
@@ -87,9 +90,16 @@ const handleUpdateUser = async () => {
   }
 }
 
-const handleDeleteUser = async (id: number) => {
-  if (confirm('Are you sure you want to delete this user?')) {
-    await usersStore.deleteUser(id)
+const handleDeleteUser = (id: number) => {
+  userToDeleteId.value = id
+  isDeleteDialogOpen.value = true
+}
+
+const confirmDeleteUser = async () => {
+  if (userToDeleteId.value) {
+    await usersStore.deleteUser(userToDeleteId.value)
+    isDeleteDialogOpen.value = false
+    userToDeleteId.value = null
   }
 }
 </script>
@@ -112,7 +122,7 @@ const handleDeleteUser = async (id: number) => {
           <DialogHeader>
             <DialogTitle>{{ t('users.addUser') }}</DialogTitle>
             <DialogDescription>
-              Create a new user account.
+              {{ t('users.createDesc') }}
             </DialogDescription>
           </DialogHeader>
           <div class="grid gap-4 py-4">
@@ -136,7 +146,7 @@ const handleDeleteUser = async (id: number) => {
               <Label for="role" class="text-right">{{ t('users.role') }}</Label>
               <Select v-model="newUser.role">
                 <SelectTrigger class="col-span-3">
-                  <SelectValue placeholder="Select a role" />
+                  <SelectValue :placeholder="t('users.selectRole')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="User">User</SelectItem>
@@ -156,7 +166,7 @@ const handleDeleteUser = async (id: number) => {
           <DialogHeader>
             <DialogTitle>{{ t('users.edit') }}</DialogTitle>
             <DialogDescription>
-              Edit user details. Leave password blank to keep current.
+              {{ t('users.editDesc') }}
             </DialogDescription>
           </DialogHeader>
           <div class="grid gap-4 py-4">
@@ -181,7 +191,7 @@ const handleDeleteUser = async (id: number) => {
               <Label for="edit-role" class="text-right">{{ t('users.role') }}</Label>
               <Select v-model="editingUser.role">
                 <SelectTrigger class="col-span-3">
-                  <SelectValue placeholder="Select a role" />
+                  <SelectValue :placeholder="t('users.selectRole')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="User">User</SelectItem>
@@ -191,7 +201,24 @@ const handleDeleteUser = async (id: number) => {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" @click="handleUpdateUser">{{ t('common.save') || 'Save' }}</Button>
+            <Button type="submit" @click="handleUpdateUser">{{ t('common.save') }}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog v-model:open="isDeleteDialogOpen">
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{{ t('users.deleteTitle') }}</DialogTitle>
+            <DialogDescription>
+              {{ t('users.deleteConfirm') }}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose as-child>
+              <Button variant="outline">{{ t('common.cancel') }}</Button>
+            </DialogClose>
+            <Button variant="destructive" @click="confirmDeleteUser">{{ t('common.delete') }}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -201,13 +228,13 @@ const handleDeleteUser = async (id: number) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
+            <TableHead>{{ t('users.id') }}</TableHead>
             <TableHead>{{ t('users.name') }}</TableHead>
             <TableHead>{{ t('auth.name') }}</TableHead>
             <TableHead>{{ t('users.email') }}</TableHead>
             <TableHead>{{ t('users.role') }}</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead class="text-right">{{ t('users.actions') }}</TableHead>
+            <TableHead>{{ t('users.createdAt') }}</TableHead>
+            <TableHead class="text-right">{{ t('common.actions') }}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
