@@ -128,8 +128,11 @@ const toggleSidebar = () => {
         :class="isCollapsed ? 'w-[60px]' : 'w-[250px]'">
         <nav class="flex flex-col gap-2 p-2 text-sm font-medium flex-1">
           <RouterLink v-for="item in navigation" :key="item.name" :to="item.href"
-            class="flex items-center rounded-lg px-3.5 py-2 text-muted-foreground transition-all hover:text-primary overflow-hidden"
-            :class="{ 'bg-muted text-primary': route.path === item.href }">
+            class="flex items-center rounded-lg py-2 text-muted-foreground transition-all hover:text-primary overflow-hidden"
+            :class="[
+              route.path === item.href ? 'bg-muted text-primary' : '',
+              isCollapsed ? 'justify-center px-2' : 'px-4'
+            ]">
             <component :is="item.icon" class="h-4 w-4 shrink-0" />
             <span class="whitespace-nowrap overflow-hidden transition-all duration-300"
               :class="isCollapsed ? 'max-w-0 opacity-0 ml-0' : 'max-w-[150px] opacity-100 ml-3'">

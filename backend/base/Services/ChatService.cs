@@ -134,6 +134,69 @@ public class ChatService(ApplicationDbContext context, IOpenAIService openAIServ
         return aiMessage;
     }
 
+    public async IAsyncEnumerable<string> ProcessUserMessageStreamingAsync(int userId, string message, int? sessionId = null)
+    {
+        ChatSession? session = null;
+        if (sessionId.HasValue)
+        {
+            session = await _context.ChatSessions.Include(s => s.Messages).FirstOrDefaultAsync(s => s.Id == sessionId.Value);
+            if (session != null && session.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("User does not own this session.");
+            }
+        }
+
+        // Save user message
+        var userMessage = new ChatMessage
+        {
+            UserId = userId,
+            SessionId = sessionId,
+            Role = ChatRoleType.User,
+            Content = message
+        };
+        _context.ChatMessages.Add(userMessage);
+
+        if (session != null)
+        {
+            session.UpdatedAt = DateTime.UtcNow;
+            if (session.Messages.Count == 0 && session.Title == "New Chat")
+            {
+                session.Title = message.Length > 30 ? message[..30] + "..." : message;
+            }
+        }
+        await _context.SaveChangesAsync();
+
+        var fullResponse = new System.Text.StringBuilder();
+
+        // Console output for user request
+        Console.WriteLine($"[AI Stream] User: {message}");
+        Console.Write("[AI Stream] AI: ");
+
+        await foreach (var chunk in _openAIService.GetChatStreamingAsync(message))
+        {
+            fullResponse.Append(chunk);
+            Console.Write(chunk); // Output to terminal
+            yield return chunk;
+        }
+        Console.WriteLine(); // End line in terminal
+
+        // Save AI response
+        var aiMessage = new ChatMessage
+        {
+            UserId = userId,
+            SessionId = sessionId,
+            Role = ChatRoleType.Assistant,
+            Content = fullResponse.ToString()
+        };
+        _context.ChatMessages.Add(aiMessage);
+
+        if (session != null)
+        {
+            session.UpdatedAt = DateTime.UtcNow;
+        }
+        await _context.SaveChangesAsync();
+    }
+
     // Legacy/Global history support
     public async Task<IEnumerable<ChatMessage>> GetChatHistoryAsync(int userId)
     {

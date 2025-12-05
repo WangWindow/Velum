@@ -5,7 +5,10 @@ public class Questionnaire
     public int Id { get; set; }
     public required string Title { get; set; }
     public string? Description { get; set; }
+    public string? InterpretationGuide { get; set; }
     public required string QuestionsJson { get; set; } // JSON array of questions
+    public string Language { get; set; } = "en";
+    public Guid GroupId { get; set; } = Guid.NewGuid();
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

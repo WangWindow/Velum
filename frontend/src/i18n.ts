@@ -34,7 +34,8 @@ const messages = {
       settings: 'Settings',
       users: 'Users',
       tasks: 'Tasks',
-      scales: 'Scales'
+      scales: 'Scales',
+      analysis: 'Analysis'
     },
     settings: {
       title: 'Settings',
@@ -102,10 +103,13 @@ const messages = {
       pending: 'Pending'
     },
     scales: {
-      title: 'Scale Import',
-      description: 'Import psychological scales using AI analysis.',
+      title: 'Scale Management',
+      description: 'Manage and import psychological scales.',
+      manage: 'Manage',
+      importMode: 'Import',
       rawContent: 'Raw Content',
       rawContentDesc: 'Paste the questionnaire text here (PDF/Word content).',
+      bilingualMode: 'Bilingual Mode',
       placeholder: 'Paste your scale content here...\nExample:\n1. I feel down-hearted and blue.\n   A. None of the time (0)\n   B. A little of the time (1)\n   ...',
       clear: 'Clear',
       analyze: 'Analyze with AI',
@@ -114,7 +118,31 @@ const messages = {
       noData: 'Parsed result will appear here',
       questions: 'Questions',
       import: 'Import to Database',
-      saving: 'Saving...'
+      saving: 'Saving...',
+      english: 'English',
+      chinese: 'Chinese',
+      type: 'Type',
+      pts: 'pts',
+      id: 'ID',
+      columnTitle: 'Title',
+      columnDescription: 'Description',
+      actions: 'Actions',
+      deleteConfirm: 'Are you sure you want to delete this scale?'
+    },
+    analysis: {
+      title: 'Data Analysis',
+      description: 'Overview of system usage and user performance.',
+      systemOverview: 'System Overview',
+      totalUsers: 'Total Users',
+      totalAssessments: 'Total Assessments',
+      averageScores: 'Average Scores by Scale',
+      individualAnalysis: 'Individual Analysis',
+      selectUserDesc: 'Select a user to view their assessment history.',
+      selectUser: 'Select User',
+      date: 'Date',
+      scale: 'Scale',
+      score: 'Score',
+      result: 'Result'
     },
     assessment: {
       title: 'Assessments',
@@ -229,7 +257,8 @@ const messages = {
       settings: '设置',
       users: '用户管理',
       tasks: '任务管理',
-      scales: '量表管理'
+      scales: '量表管理',
+      analysis: '数据分析'
     },
     settings: {
       title: '设置',
@@ -297,10 +326,13 @@ const messages = {
       pending: '待处理'
     },
     scales: {
-      title: '量表导入',
-      description: '使用 AI 分析导入心理量表。',
+      title: '量表管理',
+      description: '管理和导入心理量表。',
+      manage: '管理',
+      importMode: '导入',
       rawContent: '原始内容',
       rawContentDesc: '在此粘贴问卷文本（PDF/Word 内容）。',
+      bilingualMode: '双语模式',
       placeholder: '在此粘贴您的量表内容...\n例如：\n1. 我感到沮丧和忧郁。\n   A. 没有时间 (0)\n   B. 很少时间 (1)\n   ...',
       clear: '清空',
       analyze: '使用 AI 分析',
@@ -309,7 +341,31 @@ const messages = {
       noData: '解析结果将显示在这里',
       questions: '问题',
       import: '导入数据库',
-      saving: '保存中...'
+      saving: '保存中...',
+      english: '英文',
+      chinese: '中文',
+      type: '类型',
+      pts: '分',
+      id: 'ID',
+      columnTitle: '标题',
+      columnDescription: '描述',
+      actions: '操作',
+      deleteConfirm: '确定要删除此量表吗？'
+    },
+    analysis: {
+      title: '数据分析',
+      description: '系统使用情况和用户表现概览。',
+      systemOverview: '系统概览',
+      totalUsers: '总用户数',
+      totalAssessments: '总评估数',
+      averageScores: '各量表平均分',
+      individualAnalysis: '个人分析',
+      selectUserDesc: '选择用户以查看其评估历史。',
+      selectUser: '选择用户',
+      date: '日期',
+      scale: '量表',
+      score: '分数',
+      result: '结果'
     },
     assessment: {
       title: '评估',

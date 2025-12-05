@@ -97,6 +97,35 @@ public class ChatController(IChatService chatService) : ControllerBase
             return StatusCode(500, $"Error processing message: {ex.Message}");
         }
     }
+
+    [HttpPost("stream")]
+    public async Task SendMessageStream([FromBody] ChatRequest request)
+    {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null)
+        {
+            Response.StatusCode = 401;
+            return;
+        }
+        var userId = int.Parse(userIdClaim.Value);
+
+        Response.ContentType = "text/plain";
+
+        try
+        {
+            await foreach (var chunk in _chatService.ProcessUserMessageStreamingAsync(userId, request.Message, request.SessionId))
+            {
+                await Response.WriteAsync(chunk);
+                await Response.Body.FlushAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error?
+            Console.WriteLine($"Error in stream: {ex.Message}");
+            Response.StatusCode = 500;
+        }
+    }
 }
 
 public class CreateSessionRequest

@@ -43,3 +43,40 @@ public class ParseRequest
 {
     public string Text { get; set; } = string.Empty;
 }
+
+public class BilingualQuestionnaireTemplate
+{
+    public QuestionnaireTemplate En { get; set; } = new();
+    public QuestionnaireTemplate Zh { get; set; } = new();
+}
+
+public class OverallStats
+{
+    public int TotalAssessments { get; set; }
+    public int TotalUsers { get; set; }
+    public List<QuestionnaireStat> QuestionnaireStats { get; set; } = [];
+}
+
+public class QuestionnaireStat
+{
+    public int QuestionnaireId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public double AverageScore { get; set; }
+}
+
+public class UserAnalysisResult
+{
+    public int UserId { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public List<AssessmentSummary> History { get; set; } = [];
+}
+
+public class AssessmentSummary
+{
+    public int Id { get; set; }
+    public string QuestionnaireTitle { get; set; } = string.Empty;
+    public DateTime Date { get; set; }
+    public int Score { get; set; }
+    public string? Result { get; set; }
+}

@@ -68,6 +68,11 @@ const router = createRouter({
           component: () => import('@/views/admin/ScalesView.vue')
         },
         {
+          path: 'analysis',
+          name: 'admin-analysis',
+          component: () => import('@/views/admin/AnalysisView.vue')
+        },
+        {
           path: 'settings',
           name: 'admin-settings',
           component: () => import('@/views/admin/SettingsView.vue')

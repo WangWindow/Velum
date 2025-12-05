@@ -60,6 +60,12 @@ const handleDeleteSession = async (e: Event, id: number) => {
 // Watch for new messages to scroll to bottom
 watch(() => chatStore.messages.length, scrollToBottom)
 
+// Watch for streaming content updates
+watch(() => {
+  const lastMsg = chatStore.messages[chatStore.messages.length - 1]
+  return lastMsg ? lastMsg.content.length : 0
+}, scrollToBottom)
+
 // Config state
 const tempConfig = ref({ ...chatStore.config })
 

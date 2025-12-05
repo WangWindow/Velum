@@ -22,8 +22,14 @@ export interface QuestionnaireTemplate {
   questions: Question[]
 }
 
+export interface BilingualQuestionnaireTemplate {
+  en: QuestionnaireTemplate
+  zh: QuestionnaireTemplate
+}
+
 export const useScalesStore = defineStore('scales', () => {
   const parsedTemplate = ref<QuestionnaireTemplate | null>(null)
+  const parsedBilingualTemplate = ref<BilingualQuestionnaireTemplate | null>(null)
   const scales = ref<any[]>([])
   const isAnalyzing = ref(false)
   const isSaving = ref(false)
@@ -90,6 +96,40 @@ export const useScalesStore = defineStore('scales', () => {
     }
   }
 
+  async function parseBilingualScale(text: string) {
+    isAnalyzing.value = true
+    error.value = null
+    try {
+      const response = await api.post<BilingualQuestionnaireTemplate>('/questionnaire/parse-bilingual', { text })
+      console.log('Bilingual response:', response.data)
+      parsedBilingualTemplate.value = response.data
+    } catch (err: any) {
+      console.error('Failed to parse bilingual scale:', err)
+      error.value = err.response?.data || 'Failed to parse scale text.'
+    } finally {
+      isAnalyzing.value = false
+    }
+  }
+
+  async function saveBilingualScale() {
+    if (!parsedBilingualTemplate.value) return
+
+    isSaving.value = true
+    error.value = null
+    try {
+      await api.post('/questionnaire/bilingual', parsedBilingualTemplate.value)
+      parsedBilingualTemplate.value = null
+      await fetchScales() // Refresh list
+      return true
+    } catch (err: any) {
+      console.error('Failed to save bilingual scale:', err)
+      error.value = err.response?.data || 'Failed to save bilingual scale.'
+      return false
+    } finally {
+      isSaving.value = false
+    }
+  }
+
   function clear() {
     parsedTemplate.value = null
     error.value = null
@@ -97,6 +137,7 @@ export const useScalesStore = defineStore('scales', () => {
 
   return {
     parsedTemplate,
+    parsedBilingualTemplate,
     scales,
     isAnalyzing,
     isSaving,
@@ -106,6 +147,8 @@ export const useScalesStore = defineStore('scales', () => {
     deleteScale,
     parseScale,
     saveScale,
+    parseBilingualScale,
+    saveBilingualScale,
     clear
   }
 })

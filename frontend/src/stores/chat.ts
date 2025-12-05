@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios from 'axios'
 import api from '@/lib/api'
+import { useAuthStore } from '@/stores/auth'
 
 export interface Message {
   id: string
@@ -150,22 +151,44 @@ export const useChatStore = defineStore('chat', () => {
         })
 
       } else {
-        // Default mode: use backend
-        const response = await api.post('/chat/send', {
-          message: content,
-          sessionId: currentSessionId.value
-        })
-        const aiMessage = response.data
+        // Default mode: use backend streaming
+        const authStore = useAuthStore()
 
-        messages.value.push({
-          id: aiMessage.id.toString(),
-          role: 'assistant',
-          content: aiMessage.content,
-          timestamp: new Date(aiMessage.timestamp).getTime()
+        // Create a placeholder message for AI response
+        const aiMsgId = (Date.now() + 1).toString()
+        const aiMessage = {
+          id: aiMsgId,
+          role: 'assistant' as const,
+          content: '',
+          timestamp: Date.now()
+        }
+        messages.value.push(aiMessage)
+
+        const response = await fetch('/api/chat/stream', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authStore.token}`
+          },
+          body: JSON.stringify({
+            message: content,
+            sessionId: currentSessionId.value
+          })
         })
 
-        // Refresh sessions to update title/timestamp if needed
-        // await fetchSessions() // Might be too heavy?
+        if (!response.ok) throw new Error(response.statusText)
+        if (!response.body) throw new Error('No response body')
+
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value, { stream: true })
+          aiMessage.content += chunk
+        }
       }
     } catch (error) {
       console.error('Failed to send message:', error)

@@ -10,6 +10,7 @@ public interface IChatService
     Task DeleteSessionAsync(int sessionId, int userId);
     Task<IEnumerable<ChatMessage>> GetSessionMessagesAsync(int sessionId, int userId);
     Task<ChatMessage> ProcessUserMessageAsync(int userId, string message, int? sessionId = null);
+    IAsyncEnumerable<string> ProcessUserMessageStreamingAsync(int userId, string message, int? sessionId = null);
     Task<IEnumerable<ChatMessage>> GetChatHistoryAsync(int userId);
     Task ClearChatHistoryAsync(int userId); // Keep for backward compatibility or clear all
 }
