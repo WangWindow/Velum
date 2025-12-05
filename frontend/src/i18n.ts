@@ -39,12 +39,14 @@ const messages = {
       users: 'Users',
       tasks: 'Tasks',
       scales: 'Scales',
-      analysis: 'Analysis'
+      analysis: 'Analysis',
+      games: 'Games'
     },
     settings: {
       title: 'Settings',
       description: 'Manage your account settings and preferences.',
       language: 'Language',
+      selectLanguage: 'Select Language',
       theme: 'Theme',
       avatar: 'Avatar',
       avatarDesc: 'Select an avatar from the library.',
@@ -69,7 +71,11 @@ const messages = {
       overview: 'Overview',
       recentActivityDesc: 'Recent system activities.',
       recentHistoryDesc: 'Your recent assessment history.',
-      noHistory: 'No history available.'
+      noHistory: 'No history available.',
+      newChat: 'New Chat',
+      browseAssessments: 'Browse Assessments',
+      myProgress: 'My Progress',
+      averageScore: 'Average Score'
     },
     users: {
       title: 'User Management',
@@ -80,6 +86,7 @@ const messages = {
       editDesc: 'Edit user details. Leave password blank to keep current.',
       deleteTitle: 'Delete User',
       deleteConfirm: 'Are you sure you want to delete this user? This action cannot be undone.',
+      deleteSelfConfirm: 'WARNING: You are about to delete your own administrator account. You will be logged out immediately and lose access to the system.',
       selectRole: 'Select a role',
       createdAt: 'Created At',
       id: 'ID',
@@ -113,6 +120,7 @@ const messages = {
       status: 'Status',
       assignedDate: 'Assigned Date',
       dueDate: 'Due Date',
+      noDueDate: 'No due date',
       completed: 'Completed',
       pending: 'Pending'
     },
@@ -144,6 +152,22 @@ const messages = {
       actions: 'Actions',
       deleteConfirm: 'Are you sure you want to delete this scale?'
     },
+    query: {
+      title: 'Data Query',
+      description: 'Query and export system data.',
+      assessments: 'Assessments',
+      games: 'Games',
+      assessmentData: 'Assessment Records',
+      assessmentDataDesc: 'View detailed questionnaire response data.',
+      advancedFilter: 'Advanced Filter',
+      filters: 'Filters',
+      filtersDesc: 'Set filters to narrow down your search.',
+      searchGames: 'Search game records...',
+      minScore: 'Min Score',
+      maxScore: 'Max Score',
+      dateFrom: 'Date From',
+      dateTo: 'Date To'
+    },
     analysis: {
       title: 'Data Analysis',
       description: 'Overview of system usage and user performance.',
@@ -157,7 +181,27 @@ const messages = {
       date: 'Date',
       scale: 'Scale',
       score: 'Score',
-      result: 'Result'
+      result: 'Result',
+      searchUser: 'Search user...',
+      runBatch: 'Run Batch Analysis',
+      distribution: 'Assessments Distribution',
+      history: 'Assessment History',
+      resultSummary: 'Result Summary',
+      aiAnalysis: 'AI Analysis',
+      analyze: 'Analyze',
+      noAnalysis: 'No AI analysis available. Click analyze to generate.',
+      overview: 'Overview',
+      dataExplorer: 'Data Explorer',
+      dataExplorerDesc: 'Explore and export assessment data.',
+      selectQuestionnaire: 'Select Questionnaire',
+      searchData: 'Search data...',
+      exportCsv: 'Export CSV',
+      selectToViewData: 'Select a questionnaire to view data',
+      games: 'Games Data',
+      gameStats: 'Game Statistics',
+      gameStatsDesc: 'Monitor user engagement in mini-games.',
+      game: 'Game',
+      noGameRecords: 'No game records found.'
     },
     assessment: {
       title: 'Assessments',
@@ -172,6 +216,24 @@ const messages = {
       submittedDesc: 'Your assessment has been submitted successfully.',
       exit: 'Exit',
       score: 'Score'
+    },
+    games: {
+      title: 'Mini Games',
+      description: 'Relax and test your skills.',
+      reactionTime: 'Reaction Time',
+      reactionTest: 'Reaction Test',
+      reactionDesc: 'Click as fast as you can when the color changes!',
+      clickToStart: 'Click to Start',
+      waitForGreen: 'Wait for Green...',
+      clickNow: 'CLICK NOW!',
+      tooEarly: 'Too early! Try again.',
+      ms: 'ms',
+      leaderboard: 'Leaderboard',
+      myHistory: 'My History',
+      rank: 'Rank',
+      player: 'Player',
+      score: 'Score',
+      date: 'Date'
     },
     chat: {
       title: 'AI Assistant',
@@ -287,12 +349,15 @@ const messages = {
       users: '用户管理',
       tasks: '任务管理',
       scales: '量表管理',
-      analysis: '数据分析'
+      analysis: '数据分析',
+      query: '数据查询',
+      games: '游戏'
     },
     settings: {
       title: '设置',
       description: '管理您的帐户设置和首选项。',
       language: '语言',
+      selectLanguage: '选择语言',
       theme: '主题',
       avatar: '头像',
       avatarDesc: '从库中选择一个头像。',
@@ -317,7 +382,11 @@ const messages = {
       overview: '概览',
       recentActivityDesc: '最近的系统活动。',
       recentHistoryDesc: '您的近期评估历史。',
-      noHistory: '暂无历史记录。'
+      noHistory: '暂无历史记录。',
+      newChat: '新对话',
+      browseAssessments: '浏览评估',
+      myProgress: '我的进度',
+      averageScore: '平均分'
     },
     users: {
       title: '用户管理',
@@ -328,6 +397,7 @@ const messages = {
       editDesc: '编辑用户详情。留空密码以保持不变。',
       deleteTitle: '删除用户',
       deleteConfirm: '确定要删除此用户吗？此操作无法撤销。',
+      deleteSelfConfirm: '警告：您即将删除自己的管理员账户。您将立即退出登录并失去系统访问权限。',
       selectRole: '选择角色',
       createdAt: '创建时间',
       id: 'ID',
@@ -361,6 +431,7 @@ const messages = {
       status: '状态',
       assignedDate: '分配日期',
       dueDate: '截止日期',
+      noDueDate: '无截止日期',
       completed: '已完成',
       pending: '待处理'
     },
@@ -392,6 +463,22 @@ const messages = {
       actions: '操作',
       deleteConfirm: '确定要删除此量表吗？'
     },
+    query: {
+      title: '数据查询',
+      description: '查询和导出系统数据。',
+      assessments: '评估数据',
+      games: '游戏数据',
+      assessmentData: '评估记录',
+      assessmentDataDesc: '查看详细的问卷回答数据。',
+      advancedFilter: '高级筛选',
+      filters: '筛选条件',
+      filtersDesc: '设置筛选条件以缩小搜索范围。',
+      searchGames: '搜索游戏记录...',
+      minScore: '最低分',
+      maxScore: '最高分',
+      dateFrom: '开始日期',
+      dateTo: '结束日期'
+    },
     analysis: {
       title: '数据分析',
       description: '系统使用情况和用户表现概览。',
@@ -405,7 +492,27 @@ const messages = {
       date: '日期',
       scale: '量表',
       score: '分数',
-      result: '结果'
+      result: '结果',
+      searchUser: '搜索用户...',
+      runBatch: '运行批量分析',
+      distribution: '评估分布',
+      history: '评估历史',
+      resultSummary: '结果摘要',
+      aiAnalysis: 'AI 分析',
+      analyze: '分析',
+      noAnalysis: '暂无 AI 分析。点击分析以生成。',
+      overview: '概览',
+      dataExplorer: '数据探索',
+      dataExplorerDesc: '探索和导出评估数据。',
+      selectQuestionnaire: '选择问卷',
+      searchData: '搜索数据...',
+      exportCsv: '导出 CSV',
+      selectToViewData: '选择问卷以查看数据',
+      games: '游戏数据',
+      gameStats: '游戏统计',
+      gameStatsDesc: '监控用户在小游戏中的参与情况。',
+      game: '游戏',
+      noGameRecords: '暂无游戏记录。'
     },
     assessment: {
       title: '评估',
@@ -420,6 +527,24 @@ const messages = {
       submittedDesc: '您的评估已成功提交。',
       exit: '退出',
       score: '得分'
+    },
+    games: {
+      title: '小游戏',
+      description: '放松一下，测试你的技能。',
+      reactionTime: '反应时间',
+      reactionTest: '反应测试',
+      reactionDesc: '当颜色变化时尽快点击！',
+      clickToStart: '点击开始',
+      waitForGreen: '等待变绿...',
+      clickNow: '立即点击！',
+      tooEarly: '太早了！重试。',
+      ms: '毫秒',
+      leaderboard: '排行榜',
+      myHistory: '我的历史',
+      rank: '排名',
+      player: '玩家',
+      score: '分数',
+      date: '日期'
     },
     chat: {
       title: 'AI 助手',

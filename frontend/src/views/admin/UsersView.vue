@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useUsersStore, type User } from '@/stores/users'
+import { useAuthStore } from '@/stores/auth'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
@@ -35,6 +36,7 @@ import { Plus, Pencil, Trash2 } from 'lucide-vue-next'
 
 const { t } = useI18n()
 const usersStore = useUsersStore()
+const authStore = useAuthStore()
 const { users } = storeToRefs(usersStore)
 
 const isDialogOpen = ref(false)
@@ -56,6 +58,10 @@ const editingUser = ref({
 })
 const isDeleteDialogOpen = ref(false)
 const userToDeleteId = ref<number | null>(null)
+
+const isSelfDelete = computed(() => {
+  return userToDeleteId.value === authStore.user?.id
+})
 
 onMounted(() => {
   usersStore.fetchUsers()
@@ -210,8 +216,8 @@ const confirmDeleteUser = async () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{{ t('users.deleteTitle') }}</DialogTitle>
-            <DialogDescription>
-              {{ t('users.deleteConfirm') }}
+            <DialogDescription :class="{ 'text-destructive font-bold': isSelfDelete }">
+              {{ isSelfDelete ? t('users.deleteSelfConfirm') : t('users.deleteConfirm') }}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -250,7 +256,8 @@ const confirmDeleteUser = async () => {
                 <Button variant="ghost" size="icon" @click="handleEditUser(user)">
                   <Pencil class="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" class="text-destructive" @click="handleDeleteUser(user.id)">
+                <Button v-if="user.role !== 'Admin' || user.id === authStore.user?.id" variant="ghost" size="icon"
+                  class="text-destructive" @click="handleDeleteUser(user.id)">
                   <Trash2 class="h-4 w-4" />
                 </Button>
               </div>

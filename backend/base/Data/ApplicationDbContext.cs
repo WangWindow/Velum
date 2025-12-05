@@ -12,6 +12,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ChatSession> ChatSessions { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
     public DbSet<Assessment> Assessments { get; set; }
+    public DbSet<GameScore> GameScores { get; set; }
     public DbSet<AppSetting> AppSettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,26 +1,7 @@
 <script setup lang="ts">
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
-import { Line } from 'vue-chartjs'
 import { computed } from 'vue'
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
+import { useDark } from '@vueuse/core'
+import { Chart } from '@/components/ui/chart'
 
 const props = defineProps<{
   data: {
@@ -29,34 +10,47 @@ const props = defineProps<{
   }
 }>()
 
-const chartData = computed(() => props.data)
+const isDark = useDark()
 
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false
-    }
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
-      grid: {
-        color: 'rgba(0, 0, 0, 0.05)'
-      }
+const option = computed(() => {
+  return {
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
     },
-    x: {
-      grid: {
-        display: false
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: props.data.labels,
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: props.data.datasets.map(dataset => ({
+      name: dataset.label,
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      data: dataset.data,
+      itemStyle: {
+        color: isDark.value ? '#38bdf8' : '#0284c7'
+      },
+      lineStyle: {
+        width: 3
+      },
+      areaStyle: {
+        opacity: 0.1,
+        color: isDark.value ? '#38bdf8' : '#0284c7'
       }
-    }
+    }))
   }
-}
+})
 </script>
 
 <template>
   <div class="h-[300px] w-full">
-    <Line :data="chartData" :options="chartOptions" />
+    <Chart :option="option" />
   </div>
 </template>

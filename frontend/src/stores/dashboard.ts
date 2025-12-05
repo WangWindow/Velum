@@ -8,12 +8,22 @@ export interface ActivityItem {
   avatar: string
 }
 
+export interface RecentAssessmentItem {
+  id: number
+  userName: string
+  questionnaireTitle: string
+  score: number
+  date: string
+  result: string
+}
+
 export interface DashboardStats {
   totalUsers: number
   activeTasks: number
   completedAssessments: number
   systemHealth: string
   activities: ActivityItem[]
+  recentAssessments: RecentAssessmentItem[]
 }
 
 export interface ChartData {

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Velum.Core.Interfaces;
 using Velum.Base.Data;
+using Velum.Core.Interfaces;
 
 namespace Velum.Base.Services;
 
@@ -25,13 +25,30 @@ public class DashboardService(ApplicationDbContext context) : IDashboardService
             })
             .ToListAsync();
 
+        var recentAssessments = await _context.Assessments
+            .Include(a => a.User)
+            .Include(a => a.Questionnaire)
+            .OrderByDescending(a => a.Date)
+            .Take(5)
+            .Select(a => new RecentAssessmentItem
+            {
+                Id = a.Id,
+                UserName = a.User!.Username,
+                QuestionnaireTitle = a.Questionnaire!.Title,
+                Score = a.Score,
+                Date = a.Date,
+                Result = a.Result ?? "N/A"
+            })
+            .ToListAsync();
+
         return new DashboardStats
         {
             TotalUsers = totalUsers,
             ActiveTasks = activeTasks,
             Revenue = 0,
             SystemStatus = "Healthy",
-            Activities = recentActivity
+            Activities = recentActivity,
+            RecentAssessments = recentAssessments
         };
     }
 

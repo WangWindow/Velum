@@ -15,8 +15,10 @@ export default defineConfig({
     },
   },
   server: {
+    port: 16796, // 前端开发服务器端口
     proxy: {
       '/api': {
+        // 后端服务器地址
         target: 'http://localhost:17597',
         changeOrigin: true,
         secure: false,

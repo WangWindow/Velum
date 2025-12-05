@@ -18,6 +18,15 @@ public class AnalysisController(IAnalysisService analysisService) : ControllerBa
         return Ok(new { message = "Analysis started." });
     }
 
+    [HttpPost("analyze/{assessmentId}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> AnalyzeAssessment(int assessmentId)
+    {
+        var result = await analysisService.AnalyzeAssessmentAsync(assessmentId);
+        if (result == null) return NotFound("Assessment not found or failed to analyze.");
+        return Ok(new { analysis = result });
+    }
+
     [HttpGet("stats")]
     [Authorize(Roles = "admin")]
     public async Task<ActionResult<OverallStats>> GetOverallStats()
@@ -33,5 +42,13 @@ public class AnalysisController(IAnalysisService analysisService) : ControllerBa
         var result = await analysisService.GetUserAnalysisAsync(userId);
         if (result == null) return NotFound();
         return Ok(result);
+    }
+
+    [HttpGet("export/{questionnaireId}")]
+    [Authorize(Roles = "admin")]
+    public async Task<ActionResult<AssessmentExportData>> GetAssessmentExportData(int questionnaireId)
+    {
+        var data = await analysisService.GetAssessmentExportDataAsync(questionnaireId);
+        return Ok(data);
     }
 }

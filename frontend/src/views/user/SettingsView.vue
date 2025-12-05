@@ -81,7 +81,7 @@ const saveAvatar = async (avatarName: string) => {
             <Label for="language">{{ t('settings.language') }}</Label>
             <Select :model-value="locale" @update:model-value="changeLanguage">
               <SelectTrigger id="language" class="w-[180px]">
-                <SelectValue placeholder="Select Language" />
+                <SelectValue :placeholder="t('settings.selectLanguage')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="en">English</SelectItem>

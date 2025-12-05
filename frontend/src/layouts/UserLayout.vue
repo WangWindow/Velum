@@ -26,6 +26,7 @@ const navigation = [
   { name: 'nav.dashboard', href: '/user/dashboard', icon: LayoutDashboard },
   { name: 'nav.assessment', href: '/user/assessment', icon: ClipboardList },
   { name: 'nav.chat', href: '/user/chat', icon: MessageSquare },
+  { name: 'nav.games', href: '/user/games', icon: Zap },
   { name: 'nav.settings', href: '/user/settings', icon: Settings },
 ]
 
@@ -39,8 +40,8 @@ const toggleSidebar = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-background flex flex-col">
-    <header class="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6">
+  <div class="h-screen bg-background flex flex-col overflow-hidden">
+    <header class="flex-none flex h-16 items-center gap-4 border-b bg-background px-6 z-30">
       <Sheet v-model:open="isMobileMenuOpen">
         <SheetTrigger as-child>
           <Button variant="outline" size="icon" class="shrink-0 md:hidden">
@@ -123,8 +124,8 @@ const toggleSidebar = () => {
         </div>
       </div>
     </header>
-    <div class="flex flex-1">
-      <aside class="hidden flex-col border-r bg-background md:flex transition-all duration-300"
+    <div class="flex flex-1 overflow-hidden">
+      <aside class="hidden flex-col border-r bg-background md:flex transition-all duration-300 overflow-y-auto"
         :class="isCollapsed ? 'w-[60px]' : 'w-[250px]'">
         <nav class="flex flex-col gap-2 p-2 text-sm font-medium flex-1">
           <RouterLink v-for="item in navigation" :key="item.name" :to="item.href"
@@ -148,7 +149,7 @@ const toggleSidebar = () => {
           </Button>
         </div>
       </aside>
-      <main class="flex-1 p-4 md:p-6">
+      <main class="flex-1 overflow-y-auto p-4 md:p-6">
         <RouterView />
       </main>
     </div>

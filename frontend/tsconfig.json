@@ -9,6 +9,12 @@
     }
   ],
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
     "lib": [
       "ES2024",
       "DOM"

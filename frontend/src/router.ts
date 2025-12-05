@@ -38,6 +38,11 @@ const router = createRouter({
           path: 'settings',
           name: 'user-settings',
           component: () => import('@/views/user/SettingsView.vue')
+        },
+        {
+          path: 'games',
+          name: 'user-games',
+          component: () => import('@/views/user/GamesView.vue')
         }
       ]
     },
@@ -71,6 +76,11 @@ const router = createRouter({
           path: 'analysis',
           name: 'admin-analysis',
           component: () => import('@/views/admin/AnalysisView.vue')
+        },
+        {
+          path: 'query',
+          name: 'admin-query',
+          component: () => import('@/views/admin/DataQueryView.vue')
         },
         {
           path: 'settings',
