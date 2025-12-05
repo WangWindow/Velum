@@ -47,6 +47,19 @@ public class ChatController(IChatService chatService) : ControllerBase
         return Ok(session);
     }
 
+    [HttpPut("sessions/{id}")]
+    public async Task<ActionResult<ChatSession>> UpdateSession(int id, [FromBody] UpdateSessionRequest request)
+    {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null) return Unauthorized();
+        var userId = int.Parse(userIdClaim.Value);
+
+        var session = await _chatService.UpdateSessionAsync(id, userId, request.Title);
+        if (session == null) return NotFound();
+
+        return Ok(session);
+    }
+
     [HttpDelete("sessions/{id}")]
     public async Task<IActionResult> DeleteSession(int id)
     {
@@ -131,6 +144,11 @@ public class ChatController(IChatService chatService) : ControllerBase
 public class CreateSessionRequest
 {
     public string? Title { get; set; }
+}
+
+public class UpdateSessionRequest
+{
+    public required string Title { get; set; }
 }
 
 public class ChatRequest

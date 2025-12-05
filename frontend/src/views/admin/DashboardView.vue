@@ -45,7 +45,7 @@ const navigateToAnalysis = () => router.push('/admin/analysis')
     </div>
 
     <div v-else class="space-y-4">
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle class="text-sm font-medium">{{ t('dashboard.totalUsers') }}</CardTitle>
@@ -84,19 +84,19 @@ const navigateToAnalysis = () => router.push('/admin/analysis')
         </Card>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card class="col-span-4">
+      <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
+        <Card class="col-span-1 md:col-span-2 lg:col-span-4">
           <CardHeader>
             <CardTitle>{{ t('dashboard.overview') }}</CardTitle>
           </CardHeader>
           <CardContent class="pl-2">
             <OverviewChart v-if="chartData" :data="chartData" />
             <div v-else class="h-[300px] flex items-center justify-center text-muted-foreground">
-              No data available
+              {{ t('dashboard.noData') }}
             </div>
           </CardContent>
         </Card>
-        <Card class="col-span-3">
+        <Card class="col-span-1 md:col-span-2 lg:col-span-3">
           <CardHeader>
             <CardTitle>{{ t('dashboard.recentActivity') }}</CardTitle>
             <CardDescription>
@@ -105,7 +105,7 @@ const navigateToAnalysis = () => router.push('/admin/analysis')
           </CardHeader>
           <CardContent>
             <div v-if="!stats?.recentAssessments?.length" class="text-center py-6 text-muted-foreground">
-              No recent activity
+              {{ t('dashboard.noRecentActivity') }}
             </div>
             <div v-else class="space-y-4">
               <div v-for="assessment in stats.recentAssessments" :key="assessment.id"
@@ -127,7 +127,7 @@ const navigateToAnalysis = () => router.push('/admin/analysis')
                 </div>
               </div>
               <Button variant="ghost" class="w-full mt-2" @click="navigateToAnalysis">
-                View All
+                {{ t('dashboard.viewAll') }}
               </Button>
             </div>
           </CardContent>

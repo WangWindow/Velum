@@ -40,6 +40,20 @@ public class ChatService(ApplicationDbContext context, IOpenAIService openAIServ
             .FirstOrDefaultAsync(s => s.Id == sessionId && s.UserId == userId);
     }
 
+    public async Task<ChatSession?> UpdateSessionAsync(int sessionId, int userId, string title)
+    {
+        var session = await _context.ChatSessions
+            .FirstOrDefaultAsync(s => s.Id == sessionId && s.UserId == userId);
+
+        if (session != null)
+        {
+            session.Title = title;
+            session.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+        return session;
+    }
+
     public async Task DeleteSessionAsync(int sessionId, int userId)
     {
         var session = await _context.ChatSessions
