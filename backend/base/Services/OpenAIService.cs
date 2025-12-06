@@ -1,8 +1,9 @@
 using System.ClientModel;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using OpenAI;
 using OpenAI.Chat;
-
+using Velum.Base.Data;
 using Velum.Core.Interfaces;
 
 namespace Velum.Base.Services;
@@ -11,16 +12,43 @@ public class OpenAIService : IOpenAIService
 {
     private readonly ChatClient _chatClient;
 
-    public OpenAIService(IConfiguration configuration)
+    public OpenAIService(IConfiguration configuration, IServiceProvider serviceProvider)
     {
-        var apiKey = configuration["OpenAI:ApiKey"];
-        var baseUrl = configuration["OpenAI:BaseUrl"];
-        var model = configuration["OpenAI:Model"];
+        // Try to get settings from database first
+        string? apiKey = null;
+        string? baseUrl = null;
+        string? model = null;
+
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            // We need to be careful here. If the DB is not created yet, this might fail.
+            // But OpenAIService is usually called after app startup.
+            try
+            {
+                if (context.Database.CanConnect())
+                {
+                    var settings = context.AppSettings.ToDictionary(s => s.Key, s => s.Value);
+                    settings.TryGetValue("AiApiKey", out apiKey);
+                    settings.TryGetValue("AiApiUrl", out baseUrl);
+                    settings.TryGetValue("AiModel", out model);
+                }
+            }
+            catch
+            {
+                // Ignore DB errors, fallback to config
+            }
+        }
+
+        // Fallback to configuration
+        if (string.IsNullOrWhiteSpace(apiKey)) apiKey = configuration["OpenAI:ApiKey"];
+        if (string.IsNullOrWhiteSpace(baseUrl)) baseUrl = configuration["OpenAI:BaseUrl"];
+        if (string.IsNullOrWhiteSpace(model)) model = configuration["OpenAI:Model"];
 
         if (string.IsNullOrWhiteSpace(apiKey))
-            throw new ArgumentException("OpenAI:ApiKey is required in configuration.");
+            throw new ArgumentException("OpenAI:ApiKey is required in configuration or database.");
         if (string.IsNullOrWhiteSpace(model))
-            throw new ArgumentException("OpenAI:Model is required in configuration.");
+            throw new ArgumentException("OpenAI:Model is required in configuration or database.");
 
         OpenAIClientOptions options = new()
         {

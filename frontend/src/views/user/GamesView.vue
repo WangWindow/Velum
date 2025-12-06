@@ -1,13 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Zap, Trophy, History } from 'lucide-vue-next'
+import { Zap, Trophy, History, ChevronLeft, ChevronRight, User, Smile, Cat, Dog, Ghost, Bot, Star } from 'lucide-vue-next'
 import api from '@/lib/api'
 
 const { t } = useI18n()
+
+const avatars: Record<string, any> = {
+  'User': User,
+  'Smile': Smile,
+  'Cat': Cat,
+  'Dog': Dog,
+  'Ghost': Ghost,
+  'Bot': Bot,
+  'Zap': Zap,
+  'Star': Star
+}
 
 // Reaction Game State
 const gameState = ref<'idle' | 'waiting' | 'ready' | 'finished'>('idle')
@@ -19,6 +30,40 @@ const timeoutId = ref<any>(null)
 // Leaderboard State
 const myScores = ref<any[]>([])
 const leaderboard = ref<any[]>([])
+
+// Pagination & Sorting
+const currentPage = ref(1)
+const pageSize = 5
+const sortBy = ref<'playedAt' | 'score'>('playedAt')
+
+const sortedScores = computed(() => {
+  const scores = [...myScores.value]
+  if (sortBy.value === 'score') {
+    return scores.sort((a, b) => a.score - b.score)
+  } else {
+    return scores.sort((a, b) => new Date(b.playedAt).getTime() - new Date(a.playedAt).getTime())
+  }
+})
+
+const paginatedScores = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  return sortedScores.value.slice(start, start + pageSize)
+})
+
+const totalPages = computed(() => Math.ceil(myScores.value.length / pageSize))
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++
+}
+
+const prevPage = () => {
+  if (currentPage.value > 1) currentPage.value--
+}
+
+const toggleSort = () => {
+  sortBy.value = sortBy.value === 'playedAt' ? 'score' : 'playedAt'
+  currentPage.value = 1
+}
 
 const startGame = () => {
   gameState.value = 'waiting'
@@ -130,7 +175,14 @@ onMounted(() => {
                     class="flex items-center justify-between text-sm border-b pb-2 last:border-0">
                     <div class="flex items-center gap-2">
                       <span class="font-bold w-6">{{ index + 1 }}.</span>
-                      <span>{{ score.user?.username }}</span>
+                      <div v-if="score.avatar && avatars[score.avatar]"
+                        class="w-6 h-6 flex items-center justify-center bg-muted rounded-full">
+                        <component :is="avatars[score.avatar]" class="w-4 h-4" />
+                      </div>
+                      <div v-else class="w-6 h-6 flex items-center justify-center bg-muted rounded-full">
+                        <span class="text-xs font-bold">{{ score.username.substring(0, 1).toUpperCase() }}</span>
+                      </div>
+                      <span>{{ score.username }}</span>
                     </div>
                     <span class="font-mono">{{ score.score }} {{ t('games.ms') }}</span>
                   </div>
@@ -142,19 +194,31 @@ onMounted(() => {
             </Card>
 
             <Card>
-              <CardHeader>
+              <CardHeader class="flex flex-row items-center justify-between">
                 <CardTitle class="flex items-center gap-2">
                   <History class="h-5 w-5" />
                   {{ t('games.myHistory') }}
                 </CardTitle>
+                <Button variant="ghost" size="sm" @click="toggleSort">
+                  {{ sortBy === 'playedAt' ? t('games.sortByTime') : t('games.sortByScore') }}
+                </Button>
               </CardHeader>
               <CardContent>
                 <div class="space-y-2">
-                  <div v-for="score in myScores.slice(0, 5)" :key="score.id"
+                  <div v-for="score in paginatedScores" :key="score.id"
                     class="flex items-center justify-between text-sm border-b pb-2 last:border-0">
                     <span class="text-muted-foreground">{{ new Date(score.playedAt).toLocaleString() }}</span>
                     <span class="font-mono">{{ score.score }} {{ t('games.ms') }}</span>
                   </div>
+                </div>
+                <div v-if="totalPages > 1" class="flex items-center justify-between mt-4">
+                  <Button variant="outline" size="sm" @click="prevPage" :disabled="currentPage === 1">
+                    <ChevronLeft class="h-4 w-4" />
+                  </Button>
+                  <span class="text-sm text-muted-foreground">{{ currentPage }} / {{ totalPages }}</span>
+                  <Button variant="outline" size="sm" @click="nextPage" :disabled="currentPage === totalPages">
+                    <ChevronRight class="h-4 w-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>

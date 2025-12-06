@@ -38,4 +38,13 @@ public class SettingsController(ApplicationDbContext context) : ControllerBase
         await _context.SaveChangesAsync();
         return Ok();
     }
+
+    [HttpDelete]
+    public async Task<IActionResult> ResetSettings()
+    {
+        var settings = await _context.AppSettings.ToListAsync();
+        _context.AppSettings.RemoveRange(settings);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
 }

@@ -23,6 +23,7 @@ const messages = {
       cancel: 'Cancel',
       delete: 'Delete',
       save: 'Save',
+      confirm: 'Confirm',
       actions: 'Actions'
     },
     error: {
@@ -40,6 +41,7 @@ const messages = {
       tasks: 'Tasks',
       scales: 'Scales',
       analysis: 'Analysis',
+      query: 'Query',
       games: 'Games'
     },
     settings: {
@@ -49,6 +51,7 @@ const messages = {
       profile: 'Profile',
       system: 'System',
       language: 'Language',
+      selectLanguage: 'Select Language',
       languageDesc: 'Select your preferred language.',
       theme: 'Theme',
       themeDesc: 'Select your preferred theme.',
@@ -67,7 +70,10 @@ const messages = {
       avatar: 'Avatar',
       avatarDesc: 'Select an avatar from the library.',
       avatarUpdated: 'Avatar Updated',
-      avatarUpdatedDesc: 'Your profile avatar has been updated successfully.'
+      avatarUpdatedDesc: 'Your profile avatar has been updated successfully.',
+      confirmReset: 'Are you sure you want to reset all system settings to default? This action cannot be undone.',
+      reset: 'Reset to Default',
+      resetTitle: 'Reset Settings'
     },
     dashboard: {
       title: 'Dashboard',
@@ -252,7 +258,9 @@ const messages = {
       rank: 'Rank',
       player: 'Player',
       score: 'Score',
-      date: 'Date'
+      date: 'Date',
+      sortByTime: 'Sort by Time',
+      sortByScore: 'Sort by Score'
     },
     chat: {
       title: 'AI Assistant',
@@ -352,6 +360,7 @@ const messages = {
       cancel: '取消',
       delete: '删除',
       save: '保存',
+      confirm: '确认',
       actions: '操作'
     },
     error: {
@@ -379,6 +388,7 @@ const messages = {
       profile: '个人资料',
       system: '系统',
       language: '语言',
+      selectLanguage: '选择语言',
       languageDesc: '选择您的首选语言。',
       theme: '主题',
       themeDesc: '选择您的首选主题。',
@@ -397,7 +407,10 @@ const messages = {
       avatar: '头像',
       avatarDesc: '从库中选择一个头像。',
       avatarUpdated: '头像已更新',
-      avatarUpdatedDesc: '您的个人资料头像已成功更新。'
+      avatarUpdatedDesc: '您的个人资料头像已成功更新。',
+      confirmReset: '您确定要将所有系统设置重置为默认值吗？此操作无法撤销。',
+      reset: '重置为默认',
+      resetTitle: '重置设置'
     },
     dashboard: {
       title: '仪表盘',
@@ -582,7 +595,9 @@ const messages = {
       rank: '排名',
       player: '玩家',
       score: '分数',
-      date: '日期'
+      date: '日期',
+      sortByTime: '按时间排序',
+      sortByScore: '按分数排序'
     },
     chat: {
       title: 'AI 助手',

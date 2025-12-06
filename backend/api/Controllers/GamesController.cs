@@ -16,7 +16,10 @@ public class GamesController(IGameService gameService) : ControllerBase
     [HttpPost("score")]
     public async Task<IActionResult> SubmitScore([FromBody] SubmitScoreRequest request)
     {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null) return Unauthorized();
+        var userId = int.Parse(userIdClaim.Value);
+
         var score = await _gameService.SubmitScoreAsync(userId, request.GameName, request.Score, request.Duration);
         return Ok(score);
     }
@@ -24,7 +27,10 @@ public class GamesController(IGameService gameService) : ControllerBase
     [HttpGet("my-scores")]
     public async Task<IActionResult> GetMyScores()
     {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim == null) return Unauthorized();
+        var userId = int.Parse(userIdClaim.Value);
+
         var scores = await _gameService.GetUserScoresAsync(userId);
         return Ok(scores);
     }
@@ -32,8 +38,18 @@ public class GamesController(IGameService gameService) : ControllerBase
     [HttpGet("leaderboard/{gameName}")]
     public async Task<IActionResult> GetLeaderboard(string gameName)
     {
-        var scores = await _gameService.GetTopScoresAsync(gameName);
-        return Ok(scores);
+        var scores = await _gameService.GetTopScoresAsync(gameName, 5);
+        var dtos = scores.Select(s => new LeaderboardEntryDto
+        {
+            Id = s.Id,
+            GameName = s.GameName,
+            Score = s.Score,
+            Duration = s.Duration,
+            PlayedAt = s.PlayedAt,
+            Username = s.User?.Username ?? "Unknown",
+            Avatar = s.User?.Avatar
+        });
+        return Ok(dtos);
     }
 
     [HttpGet("all")]
@@ -50,4 +66,15 @@ public class SubmitScoreRequest
     public string GameName { get; set; } = string.Empty;
     public int Score { get; set; }
     public double Duration { get; set; }
+}
+
+public class LeaderboardEntryDto
+{
+    public int Id { get; set; }
+    public string GameName { get; set; } = string.Empty;
+    public int Score { get; set; }
+    public double Duration { get; set; }
+    public DateTime PlayedAt { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string? Avatar { get; set; }
 }

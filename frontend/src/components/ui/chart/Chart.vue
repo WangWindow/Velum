@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, provide } from 'vue'
-import { useDark } from '@vueuse/core'
+import { computed, provide, ref, onMounted } from 'vue'
+import { useMutationObserver } from '@vueuse/core'
 import VChart, { THEME_KEY } from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -36,7 +36,23 @@ const props = withDefaults(defineProps<{
   class: ''
 })
 
-const isDark = useDark()
+const isDark = ref(false)
+
+onMounted(() => {
+  isDark.value = document.documentElement.classList.contains('dark')
+})
+
+useMutationObserver(
+  typeof document !== 'undefined' ? document.documentElement : null,
+  () => {
+    isDark.value = document.documentElement.classList.contains('dark')
+  },
+  {
+    attributes: true,
+    attributeFilter: ['class'],
+  }
+)
+
 provide(THEME_KEY, computed(() => isDark.value ? 'dark' : 'light'))
 
 const mergedOption = computed(() => {

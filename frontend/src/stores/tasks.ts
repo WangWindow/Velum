@@ -43,7 +43,7 @@ export const useTasksStore = defineStore('tasks', () => {
 
   async function fetchUsers() {
     try {
-      const response = await api.get<UserSummary[]>('/users')
+      const response = await api.get<UserSummary[]>('/users?role=User')
       users.value = response.data
     } catch (error) {
       console.error('Failed to fetch users:', error)

@@ -10,23 +10,47 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from '@/components/ui/dialog'
 import ThemeToggle from '@/components/ThemeToggle.vue'
-import { Loader2 } from 'lucide-vue-next'
+import { User, Smile, Cat, Dog, Ghost, Bot, Zap, Star, Loader2 } from 'lucide-vue-next'
 
 const { t, locale } = useI18n()
 const authStore = useAuthStore()
 const settingsStore = useSettingsStore()
 
-const isLoading = ref(false)
 const isSaving = ref(false)
 
 // Profile State
 const profileForm = ref({
   fullName: authStore.user?.fullName || '',
   email: authStore.user?.email || '',
-  avatar: authStore.user?.avatar || ''
+  avatar: authStore.user?.avatar || 'Default'
 })
+
+const avatars = [
+  { name: 'Default', icon: null },
+  { name: 'User', icon: User },
+  { name: 'Smile', icon: Smile },
+  { name: 'Cat', icon: Cat },
+  { name: 'Dog', icon: Dog },
+  { name: 'Ghost', icon: Ghost },
+  { name: 'Bot', icon: Bot },
+  { name: 'Zap', icon: Zap },
+  { name: 'Star', icon: Star },
+]
+
+const selectAvatar = (avatarName: string) => {
+  profileForm.value.avatar = avatarName
+}
 
 // System Settings State
 const systemSettings = ref({
@@ -67,6 +91,18 @@ const handleUpdateSystemSettings = async () => {
   isSaving.value = false
 }
 
+const handleResetSystemSettings = async () => {
+  isSaving.value = true
+  await settingsStore.resetSettings()
+  systemSettings.value = {
+    aiApiUrl: settingsStore.getSettingValue('AiApiUrl'),
+    aiApiKey: settingsStore.getSettingValue('AiApiKey'),
+    aiModel: settingsStore.getSettingValue('AiModel'),
+    systemPrompt: settingsStore.getSettingValue('SystemPrompt')
+  }
+  isSaving.value = false
+}
+
 const userInitials = computed(() => {
   const name = authStore.user?.fullName || authStore.user?.username || 'U'
   return name.substring(0, 2).toUpperCase()
@@ -93,14 +129,13 @@ const userInitials = computed(() => {
         <Card>
           <CardHeader>
             <CardTitle>{{ t('settings.language') }}</CardTitle>
-            <CardDescription>{{ t('settings.languageDesc') }}</CardDescription>
           </CardHeader>
           <CardContent>
             <div class="flex items-center space-x-4">
-              <Label for="language" class="w-[100px]">{{ t('settings.language') }}</Label>
+              <Label for="language">{{ t('settings.language') }}</Label>
               <Select :model-value="locale" @update:model-value="changeLanguage">
-                <SelectTrigger id="language" class="w-[200px]">
-                  <SelectValue placeholder="Select Language" />
+                <SelectTrigger id="language" class="w-[180px]">
+                  <SelectValue :placeholder="t('settings.selectLanguage')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="en">English</SelectItem>
@@ -114,11 +149,10 @@ const userInitials = computed(() => {
         <Card>
           <CardHeader>
             <CardTitle>{{ t('settings.theme') }}</CardTitle>
-            <CardDescription>{{ t('settings.themeDesc') }}</CardDescription>
           </CardHeader>
           <CardContent>
             <div class="flex items-center space-x-4">
-              <Label class="w-[100px]">{{ t('settings.theme') }}</Label>
+              <Label>{{ t('settings.theme') }}</Label>
               <ThemeToggle />
             </div>
           </CardContent>
@@ -132,14 +166,18 @@ const userInitials = computed(() => {
             <CardDescription>{{ t('settings.profileDesc') }}</CardDescription>
           </CardHeader>
           <CardContent class="space-y-6">
-            <div class="flex items-center gap-6">
-              <Avatar class="h-20 w-20">
-                <AvatarImage :src="profileForm.avatar" />
-                <AvatarFallback>{{ userInitials }}</AvatarFallback>
-              </Avatar>
-              <div class="space-y-2 flex-1">
-                <Label>{{ t('settings.avatarUrl') }}</Label>
-                <Input v-model="profileForm.avatar" placeholder="https://..." />
+            <div class="space-y-4">
+              <Label>{{ t('settings.avatar') }}</Label>
+              <div class="flex flex-wrap gap-4">
+                <Button v-for="avatar in avatars" :key="avatar.name" variant="outline"
+                  class="h-16 w-16 rounded-full p-0"
+                  :class="{ 'ring-2 ring-primary': profileForm.avatar === avatar.name || (avatar.name === 'Default' && !profileForm.avatar) }"
+                  @click="selectAvatar(avatar.name)">
+                  <span v-if="avatar.name === 'Default'" class="text-lg font-bold">
+                    {{ userInitials }}
+                  </span>
+                  <component v-else :is="avatar.icon" class="h-8 w-8" />
+                </Button>
               </div>
             </div>
             <div class="grid gap-4 md:grid-cols-2">
@@ -197,7 +235,30 @@ const userInitials = computed(() => {
               <Textarea v-model="systemSettings.systemPrompt" rows="6" placeholder="You are a helpful assistant..." />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter class="flex justify-between">
+            <Dialog>
+              <DialogTrigger as-child>
+                <Button variant="destructive" :disabled="isSaving">
+                  {{ t('settings.reset') }}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{{ t('settings.resetTitle') }}</DialogTitle>
+                  <DialogDescription>
+                    {{ t('settings.confirmReset') }}
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose as-child>
+                    <Button variant="outline">{{ t('common.cancel') }}</Button>
+                  </DialogClose>
+                  <Button variant="destructive" @click="handleResetSystemSettings">
+                    {{ t('common.confirm') }}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <Button @click="handleUpdateSystemSettings" :disabled="isSaving">
               <Loader2 v-if="isSaving" class="mr-2 h-4 w-4 animate-spin" />
               {{ t('common.save') }}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useDark } from '@vueuse/core'
+import { computed, ref, onMounted } from 'vue'
+import { useMutationObserver } from '@vueuse/core'
 import { Chart } from '@/components/ui/chart'
 
 const props = defineProps<{
@@ -10,7 +10,22 @@ const props = defineProps<{
   }
 }>()
 
-const isDark = useDark()
+const isDark = ref(false)
+
+onMounted(() => {
+  isDark.value = document.documentElement.classList.contains('dark')
+})
+
+useMutationObserver(
+  typeof document !== 'undefined' ? document.documentElement : null,
+  () => {
+    isDark.value = document.documentElement.classList.contains('dark')
+  },
+  {
+    attributes: true,
+    attributeFilter: ['class'],
+  }
+)
 
 const option = computed(() => {
   return {

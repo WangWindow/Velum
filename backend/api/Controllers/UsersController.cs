@@ -16,9 +16,14 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "admin")]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<User>>> GetUsers([FromQuery] UserRoleType? role)
     {
-        return await _context.Users.ToListAsync();
+        var query = _context.Users.AsQueryable();
+        if (role.HasValue)
+        {
+            query = query.Where(u => u.Role == role.Value);
+        }
+        return await query.ToListAsync();
     }
 
     [HttpGet("{id}")]

@@ -36,6 +36,19 @@ export const useSettingsStore = defineStore('settings', () => {
     }
   }
 
+  async function resetSettings() {
+    isLoading.value = true
+    try {
+      await api.delete('/settings')
+      await fetchSettings()
+    } catch (error) {
+      console.error('Failed to reset settings:', error)
+      throw error
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   function getSettingValue(key: string): string {
     const setting = settings.value.find(s => s.key === key)
     return setting ? setting.value : ''
@@ -46,6 +59,7 @@ export const useSettingsStore = defineStore('settings', () => {
     isLoading,
     fetchSettings,
     updateSettings,
+    resetSettings,
     getSettingValue
   }
 })

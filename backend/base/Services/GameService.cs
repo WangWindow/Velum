@@ -35,12 +35,20 @@ public class GameService(ApplicationDbContext context) : IGameService
 
     public async Task<IEnumerable<GameScore>> GetTopScoresAsync(string gameName, int count = 10)
     {
-        return await _context.GameScores
+        var query = _context.GameScores
             .Include(s => s.User)
-            .Where(s => s.GameName == gameName)
-            .OrderByDescending(s => s.Score)
-            .Take(count)
-            .ToListAsync();
+            .Where(s => s.GameName == gameName);
+
+        if (gameName == "ReactionTime")
+        {
+            query = query.OrderBy(s => s.Score);
+        }
+        else
+        {
+            query = query.OrderByDescending(s => s.Score);
+        }
+
+        return await query.Take(count).ToListAsync();
     }
 
     public async Task<IEnumerable<GameScore>> GetAllScoresAsync()
