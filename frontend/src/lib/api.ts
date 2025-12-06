@@ -1,8 +1,11 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
+const isDev = import.meta.env.DEV
+const baseURL = isDev ? '/api' : 'http://localhost:17597/api'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL,
   timeout: 180000, // 3 minutes timeout for AI operations
   headers: {
     'Content-Type': 'application/json'
