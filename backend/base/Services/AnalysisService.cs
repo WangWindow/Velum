@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Velum.Base.Data;
@@ -155,12 +156,12 @@ public class AnalysisService(IServiceProvider serviceProvider, ApplicationDbCont
         var questions = new List<dynamic>();
         try
         {
-            questions = System.Text.Json.JsonSerializer.Deserialize<List<dynamic>>(questionnaire.QuestionsJson) ?? [];
+            questions = JsonSerializer.Deserialize<List<dynamic>>(questionnaire.QuestionsJson) ?? [];
             foreach (var q in questions)
             {
                 // Assuming question object has "text" property
                 // We use JsonElement if dynamic deserialization results in JsonElement
-                if (q is System.Text.Json.JsonElement element)
+                if (q is JsonElement element)
                 {
                     if (element.TryGetProperty("text", out var textProp))
                     {
@@ -195,7 +196,7 @@ public class AnalysisService(IServiceProvider serviceProvider, ApplicationDbCont
                     // or we need to know the question IDs.
 
                     // Let's try to parse as Dictionary<string, object>
-                    var answers = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(assessment.DetailsJson);
+                    var answers = JsonSerializer.Deserialize<Dictionary<string, object>>(assessment.DetailsJson);
 
                     if (answers != null)
                     {
@@ -206,7 +207,7 @@ public class AnalysisService(IServiceProvider serviceProvider, ApplicationDbCont
                         int qIndex = 0;
                         foreach (var q in questions)
                         {
-                            if (q is System.Text.Json.JsonElement element && element.TryGetProperty("id", out var idProp))
+                            if (q is JsonElement element && element.TryGetProperty("id", out var idProp))
                             {
                                 var qId = idProp.ToString();
                                 if (answers.TryGetValue(qId, out var ans))
