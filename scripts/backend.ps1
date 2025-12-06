@@ -15,7 +15,6 @@ dotnet build-server shutdown
 Get-Process -Name "VBCSCompiler" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 
 $ApiPath = Join-Path $RepoRoot "backend\api"
-$WebPath = Join-Path $RepoRoot "frontend"
 
 $processes = @()
 
@@ -25,11 +24,10 @@ try {
     $apiProcess = Start-Process dotnet -ArgumentList "run" -WorkingDirectory $ApiPath -NoNewWindow -PassThru
     $processes += $apiProcess
 
-    # 启动 Web 前端
-    Write-Host "⚡ Launching Web Frontend (Vue)..." -ForegroundColor Yellow
-    Write-Host "Press Ctrl+C to stop all services." -ForegroundColor Yellow
-    Set-Location $WebPath
-    bun dev
+    # 等待进程结束，这样脚本不会立即退出
+    if (-not $apiProcess.HasExited) {
+        Wait-Process -Id $apiProcess.Id
+    }
 }
 finally {
     Write-Host "`n🛑 Stopping background services..." -ForegroundColor Red

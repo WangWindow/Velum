@@ -19,6 +19,6 @@
     },
     // extension settings
     "rust-analyzer.linkedProjects": [
-        "apps/web/src-tauri/Cargo.toml"
+        "frontend/src-tauri/Cargo.toml"
     ]
 }
