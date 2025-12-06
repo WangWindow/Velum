@@ -24,7 +24,11 @@ const messages = {
       delete: 'Delete',
       save: 'Save',
       confirm: 'Confirm',
-      actions: 'Actions'
+      actions: 'Actions',
+      refresh: 'Refresh',
+      search: 'Search here...',
+      confirmDelete: 'Are you sure you want to delete this item?',
+      confirmDeleteSelected: 'Are you sure you want to delete {count} items?'
     },
     error: {
       notFound: {
@@ -42,7 +46,20 @@ const messages = {
       scales: 'Scales',
       analysis: 'Analysis',
       query: 'Query',
+      logs: 'Logs',
       games: 'Games'
+    },
+    logs: {
+      title: 'System Logs',
+      description: 'View system activities and audit logs.',
+      systemLogs: 'System Logs',
+      recentActivity: 'Recent system activity logs.',
+      noLogs: 'No logs found.',
+      level: 'Level',
+      timestamp: 'Timestamp',
+      user: 'User',
+      action: 'Action',
+      message: 'Message'
     },
     settings: {
       title: 'Settings',
@@ -361,7 +378,11 @@ const messages = {
       delete: '删除',
       save: '保存',
       confirm: '确认',
-      actions: '操作'
+      actions: '操作',
+      refresh: '刷新',
+      search: '在这里搜索...',
+      confirmDelete: '您确定要删除此项目吗？',
+      confirmDeleteSelected: '您确定要删除选中的 {count} 个项目吗？'
     },
     error: {
       notFound: {
@@ -379,7 +400,20 @@ const messages = {
       scales: '量表管理',
       analysis: '数据分析',
       query: '数据查询',
+      logs: '系统日志',
       games: '游戏'
+    },
+    logs: {
+      title: '系统日志',
+      description: '查看系统活动和审计日志。',
+      systemLogs: '系统日志',
+      recentActivity: '最近的系统活动日志。',
+      noLogs: '暂无日志。',
+      level: '级别',
+      timestamp: '时间戳',
+      user: '用户',
+      action: '操作',
+      message: '消息'
     },
     settings: {
       title: '设置',

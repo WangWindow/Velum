@@ -14,6 +14,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Assessment> Assessments { get; set; }
     public DbSet<GameScore> GameScores { get; set; }
     public DbSet<AppSetting> AppSettings { get; set; }
+    public DbSet<SystemLog> SystemLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -9,9 +9,10 @@ namespace Velum.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class GamesController(IGameService gameService) : ControllerBase
+public class GamesController(IGameService gameService, ILogService logService) : ControllerBase
 {
     private readonly IGameService _gameService = gameService;
+    private readonly ILogService _logService = logService;
 
     [HttpPost("score")]
     public async Task<IActionResult> SubmitScore([FromBody] SubmitScoreRequest request)
@@ -21,6 +22,14 @@ public class GamesController(IGameService gameService) : ControllerBase
         var userId = int.Parse(userIdClaim.Value);
 
         var score = await _gameService.SubmitScoreAsync(userId, request.GameName, request.Score, request.Duration);
+
+        await _logService.LogInfoAsync(
+            message: $"Score submitted for {request.GameName}: {request.Score} (Duration: {request.Duration}s)",
+            userId: userId,
+            action: "SubmitScore",
+            resource: "Games"
+        );
+
         return Ok(score);
     }
 

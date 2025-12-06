@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Velum.Base.Data;
+using Velum.Base.Services;
 using Velum.Core.Enums;
+using Velum.Core.Interfaces;
 using Velum.Core.Models;
 
 namespace Velum.Api.Controllers;
@@ -10,9 +12,10 @@ namespace Velum.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class UsersController(ApplicationDbContext context) : ControllerBase
+public class UsersController(ApplicationDbContext context, ILogService logService) : ControllerBase
 {
     private readonly ApplicationDbContext _context = context;
+    private readonly ILogService _logService = logService;
 
     [HttpGet]
     [Authorize(Roles = "admin")]
@@ -60,6 +63,13 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
+        await _logService.LogInfoAsync(
+            message: $"User created: {user.Username} by Admin",
+            userId: GetCurrentUserId(),
+            action: "CreateUser",
+            resource: "Users"
+        );
+
         return CreatedAtAction("GetUser", new { id = user.Id }, user);
     }
 
@@ -90,6 +100,13 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
         try
         {
             await _context.SaveChangesAsync();
+
+            await _logService.LogInfoAsync(
+                message: $"User updated: {existingUser.Username} by Admin",
+                userId: GetCurrentUserId(),
+                action: "UpdateUser",
+                resource: "Users"
+            );
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -118,6 +135,13 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
 
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
+
+        await _logService.LogInfoAsync(
+            message: $"User deleted: {user.Username} by Admin",
+            userId: GetCurrentUserId(),
+            action: "DeleteUser",
+            resource: "Users"
+        );
 
         return NoContent();
     }
@@ -149,6 +173,13 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
         try
         {
             await _context.SaveChangesAsync();
+
+            await _logService.LogInfoAsync(
+                message: $"User updated profile: {existingUser.Username}",
+                userId: id,
+                action: "UpdateProfile",
+                resource: "Users"
+            );
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -168,6 +199,16 @@ public class UsersController(ApplicationDbContext context) : ControllerBase
     private bool UserExists(int id)
     {
         return _context.Users.Any(e => e.Id == id);
+    }
+
+    private int? GetCurrentUserId()
+    {
+        var userIdClaim = User.FindFirst("UserId");
+        if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+        {
+            return userId;
+        }
+        return null;
     }
 }
 

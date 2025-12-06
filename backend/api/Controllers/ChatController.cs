@@ -8,9 +8,10 @@ namespace Velum.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class ChatController(IChatService chatService) : ControllerBase
+public class ChatController(IChatService chatService, ILogService logService) : ControllerBase
 {
     private readonly IChatService _chatService = chatService;
+    private readonly ILogService _logService = logService;
 
     [HttpGet("sessions")]
     public async Task<ActionResult<IEnumerable<ChatSession>>> GetSessions()
@@ -31,6 +32,14 @@ public class ChatController(IChatService chatService) : ControllerBase
         var userId = int.Parse(userIdClaim.Value);
 
         var session = await _chatService.CreateSessionAsync(userId, request?.Title);
+
+        await _logService.LogInfoAsync(
+            message: $"Chat session created: {session.Title}",
+            userId: userId,
+            action: "CreateChatSession",
+            resource: "Chat"
+        );
+
         return Ok(session);
     }
 
@@ -68,6 +77,14 @@ public class ChatController(IChatService chatService) : ControllerBase
         var userId = int.Parse(userIdClaim.Value);
 
         await _chatService.DeleteSessionAsync(id, userId);
+
+        await _logService.LogInfoAsync(
+            message: $"Chat session deleted: {id}",
+            userId: userId,
+            action: "DeleteChatSession",
+            resource: "Chat"
+        );
+
         return NoContent();
     }
 
@@ -90,6 +107,14 @@ public class ChatController(IChatService chatService) : ControllerBase
         var userId = int.Parse(userIdClaim.Value);
 
         await _chatService.ClearChatHistoryAsync(userId);
+
+        await _logService.LogWarningAsync(
+            message: "Chat history cleared",
+            userId: userId,
+            action: "ClearChatHistory",
+            resource: "Chat"
+        );
+
         return NoContent();
     }
 

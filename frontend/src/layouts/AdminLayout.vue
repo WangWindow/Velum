@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Menu, LayoutDashboard, Users, CheckSquare, FileText, Settings, LogOut, ChevronLeft, ChevronRight, User, Smile, Cat, Dog, Ghost, Bot, Zap, Star, BarChart, FileSpreadsheet } from 'lucide-vue-next'
+import { Menu, LayoutDashboard, Users, CheckSquare, FileText, Settings, LogOut, ChevronLeft, ChevronRight, User, Smile, Cat, Dog, Ghost, Bot, Zap, Star, BarChart, FileSpreadsheet, ScrollText } from 'lucide-vue-next'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import LanguageToggle from '@/components/LanguageToggle.vue'
 import VelumLogo from '@/components/icons/VelumLogo.vue'
@@ -29,6 +29,7 @@ const navigation = [
   { name: 'nav.scales', href: '/admin/scales', icon: FileText },
   { name: 'nav.analysis', href: '/admin/analysis', icon: BarChart },
   { name: 'nav.query', href: '/admin/query', icon: FileSpreadsheet },
+  { name: 'nav.logs', href: '/admin/logs', icon: ScrollText },
   { name: 'nav.settings', href: '/admin/settings', icon: Settings },
 ]
 
