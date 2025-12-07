@@ -38,6 +38,11 @@ COPY --from=build /app/publish .
 EXPOSE 17597
 ENV ASPNETCORE_URLS=http://+:17597
 
+# Create a data directory and ensure the app user owns it
+# This is required for SQLite to write the database file
+USER root
+RUN mkdir -p /data && chown -R app:app /data
+
 # Use a non-root user for security
 USER app
 
