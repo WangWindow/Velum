@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 using Velum.Base.Configuration;
 using Velum.Base.Data;
 using Velum.Base.Services;
@@ -65,6 +66,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 // Enable OpenAPI/Swagger in all environments for easier testing
 app.MapOpenApi();
+app.MapScalarApiReference();
 
 // Disable HTTPS redirection in Docker/Production to avoid loop/connection issues
 // app.UseHttpsRedirection();
