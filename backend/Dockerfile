@@ -15,18 +15,11 @@ RUN dotnet restore api/Velum.Api.csproj -r linux-musl-x64
 # Copy the remaining source code
 COPY . .
 
-# Build and publish
-# -c Release: Optimize for production
-# -r linux-musl-x64: Target Alpine Linux
-# --no-restore: Skip restore as it's already done
-# -p:PublishReadyToRun=true: Pre-compile to native code for faster startup (Performance)
-# --self-contained false: Use the shared runtime to keep image size small (Efficiency)
 WORKDIR /src/api
 RUN dotnet publish -c Release -o /app/publish \
     -r linux-musl-x64 \
     --no-restore \
-    --self-contained false \
-    -p:PublishReadyToRun=true
+    --self-contained false
 
 # Stage 2: Runtime
 # Use Alpine Runtime for minimal image size (Efficiency)
