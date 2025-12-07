@@ -63,12 +63,11 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// Enable OpenAPI/Swagger in all environments for easier testing
+app.MapOpenApi();
 
-app.UseHttpsRedirection();
+// Disable HTTPS redirection in Docker/Production to avoid loop/connection issues
+// app.UseHttpsRedirection();
 
 app.UseCors(builder => builder
     .AllowAnyOrigin()
