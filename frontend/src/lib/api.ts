@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
 const isDev = import.meta.env.DEV
-const baseURL = isDev ? '/api' : 'http://localhost:17597/api'
+const baseURL = import.meta.env.VITE_API_BASE_URL || (isDev ? '/api' : 'http://localhost:17597/api')
 
 const api = axios.create({
   baseURL,
