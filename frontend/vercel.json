@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/api/:match*",
+            "destination": "https://azure.modestwang.cn:16796/api/:match*"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

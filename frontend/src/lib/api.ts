@@ -2,7 +2,8 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
 const isDev = import.meta.env.DEV
-const baseURL = import.meta.env.VITE_API_BASE_URL || (isDev ? '/api' : 'http://localhost:17597/api')
+// 生产环境默认使用 HTTPS 端口 16796，开发环境使用本地代理
+const baseURL = import.meta.env.VITE_API_BASE_URL || (isDev ? '/api' : 'https://azure.modestwang.cn:16796/api')
 
 const api = axios.create({
   baseURL,

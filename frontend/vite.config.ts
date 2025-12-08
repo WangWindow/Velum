@@ -16,7 +16,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 16796, // 前端开发服务器端口
+    port: 14514, // 前端开发服务器端口
     proxy: {
       '/api': {
         // 后端服务器地址

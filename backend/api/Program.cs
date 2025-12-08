@@ -68,8 +68,8 @@ var app = builder.Build();
 app.MapOpenApi();
 app.MapScalarApiReference();
 
-// Disable HTTPS redirection in Docker/Production to avoid loop/connection issues
-// app.UseHttpsRedirection();
+// Enable HTTPS redirection
+app.UseHttpsRedirection();
 
 app.UseCors(builder => builder
     .AllowAnyOrigin()
