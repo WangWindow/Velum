@@ -19,6 +19,7 @@ const username = ref('')
 const password = ref('')
 const email = ref('')
 const fullName = ref('')
+const registrationKey = ref('')
 const isLoading = ref(false)
 
 const handleSubmit = async () => {
@@ -28,7 +29,7 @@ const handleSubmit = async () => {
 
   let success = false
   if (isRegistering.value) {
-    const result = await authStore.register(username.value, password.value, email.value, fullName.value)
+    const result = await authStore.register(username.value, password.value, email.value, fullName.value, registrationKey.value)
     if (result.success) {
       toast({
         title: t('login.registrationSuccess'),
@@ -84,6 +85,10 @@ const handleSubmit = async () => {
         <div v-if="isRegistering" class="space-y-2">
           <Label for="fullName">{{ t('login.fullName') }}</Label>
           <Input id="fullName" v-model="fullName" placeholder="John Doe" />
+        </div>
+        <div v-if="isRegistering" class="space-y-2">
+          <Label for="registrationKey">{{ t('login.registrationKey') }}</Label>
+          <Input id="registrationKey" v-model="registrationKey" type="password" placeholder="114514" />
         </div>
         <div class="space-y-2">
           <Label for="password">{{ t('login.password') }}</Label>

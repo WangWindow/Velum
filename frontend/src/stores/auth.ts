@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/lib/api'
+// @ts-ignore
+import JSEncrypt from 'jsencrypt'
 
 export interface User {
   id?: number
@@ -27,9 +29,37 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!token.value)
   const isAdmin = computed(() => role.value === 'admin')
 
+  async function getPublicKey(): Promise<string | null> {
+    try {
+      const response = await api.get('/auth/publickey')
+      return response.data.publicKey
+    } catch (error) {
+      // If 404 or other error, assume encryption is disabled (Dev mode)
+      return null
+    }
+  }
+
+  async function encryptPassword(password: string): Promise<string> {
+    const publicKey = await getPublicKey()
+    if (!publicKey) {
+      return password
+    }
+
+    const encryptor = new JSEncrypt()
+    encryptor.setPublicKey(publicKey)
+    const encrypted = encryptor.encrypt(password)
+
+    if (!encrypted) {
+      console.error('Encryption failed')
+      return password // Fallback or throw? Fallback for now.
+    }
+    return encrypted
+  }
+
   async function login(username: string, password: string) {
     try {
-      const response = await api.post('/auth/login', { username, password })
+      const encryptedPassword = await encryptPassword(password)
+      const response = await api.post('/auth/login', { username, password: encryptedPassword })
       const data = response.data
 
       token.value = data.token
@@ -53,9 +83,10 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function register(username: string, password: string, email?: string, fullName?: string) {
+  async function register(username: string, password: string, email?: string, fullName?: string, registrationKey?: string) {
     try {
-      await api.post('/auth/register', { username, password, email, fullName })
+      const encryptedPassword = await encryptPassword(password)
+      await api.post('/auth/register', { username, password: encryptedPassword, email, fullName, registrationKey })
       return { success: true }
     } catch (error: any) {
       console.error('Registration failed:', error)

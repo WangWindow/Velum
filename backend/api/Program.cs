@@ -27,6 +27,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IOpenAIService, OpenAIService>();
+builder.Services.AddSingleton<IPasswordManager, PasswordManager>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IChatService, ChatService>();
@@ -83,6 +84,9 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
     await SeedData.InitializeAsync(db);
+
+    // Force initialization of PasswordManager to generate/print keys if needed
+    scope.ServiceProvider.GetRequiredService<IPasswordManager>();
 }
 
 app.UseAuthentication();

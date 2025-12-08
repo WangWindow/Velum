@@ -6,8 +6,7 @@ public class User
 {
     public int Id { get; set; }
     public required string Username { get; set; }
-    [System.Text.Json.Serialization.JsonIgnore]
-    public string PasswordHash { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
     public string? Email { get; set; }
     public string? FullName { get; set; }
     public string? Avatar { get; set; }

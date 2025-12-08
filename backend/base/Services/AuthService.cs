@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,51 +12,74 @@ using Velum.Core.Models;
 
 namespace Velum.Base.Services;
 
-public class AuthService(ApplicationDbContext context, IConfiguration configuration) : IAuthService
+public class AuthService(ApplicationDbContext context, IConfiguration configuration, IPasswordManager passwordManager) : IAuthService
 {
     private readonly ApplicationDbContext _context = context;
     private readonly IConfiguration _configuration = configuration;
+    private readonly IPasswordManager _passwordManager = passwordManager;
 
     public async Task<(string? Token, User? User, string? Error)> LoginAsync(string username, string password)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (user == null || user.PasswordHash != password)
+        if (user == null)
         {
             return (null, null, "Invalid username or password");
+        }
+
+        try
+        {
+            if (!_passwordManager.VerifyPassword(password, user.Password))
+            {
+                return (null, null, "Invalid username or password");
+            }
+        }
+        catch (Exception ex)
+        {
+            return (null, null, $"Authentication failed: {ex.Message}");
         }
 
         var token = GenerateJwtToken(user);
         return (token, user, null);
     }
 
-    public async Task<(bool Success, string? Error)> RegisterAsync(string username, string password, string? email, string? fullName, string? adminKey)
+    private static string ComputeSha256Hash(string rawData)
+    {
+        byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawData));
+
+        StringBuilder builder = new();
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            builder.Append(bytes[i].ToString("x2"));
+        }
+        return builder.ToString();
+    }
+
+    public async Task<(bool Success, string? Error)> RegisterAsync(string username, string password, string? email, string? fullName, string? registrationKey)
     {
         if (await _context.Users.AnyAsync(u => u.Username == username))
         {
             return (false, "Username already exists");
         }
 
-        var role = UserRoleType.User;
-        if (!string.IsNullOrEmpty(adminKey))
+        // Decrypt password if encryption is enabled
+        string plainPassword;
+        try
         {
-            var configuredAdminKey = _configuration["AdminSettings:RegistrationKey"];
-            if (!string.IsNullOrEmpty(configuredAdminKey) && adminKey == configuredAdminKey)
-            {
-                role = UserRoleType.Admin;
-            }
-            else
-            {
-                return (false, "Invalid Admin Key");
-            }
+            plainPassword = _passwordManager.ProcessPassword(password);
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Password processing failed: {ex.Message}");
         }
 
         var user = new User
         {
             Username = username,
-            PasswordHash = password, // In real app, hash this!
+            Password = plainPassword,
             Email = email,
-            FullName = fullName,
-            Role = role
+            FullName = fullName ?? username,
+            Role = UserRoleType.User,
+            CreatedAt = DateTime.UtcNow
         };
 
         _context.Users.Add(user);

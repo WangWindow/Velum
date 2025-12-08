@@ -54,7 +54,7 @@ public class UsersController(ApplicationDbContext context, ILogService logServic
         var user = new User
         {
             Username = request.Username,
-            PasswordHash = request.Password, // In real app, hash this!
+            Password = request.Password,
             Email = request.Email,
             FullName = request.FullName,
             Role = Enum.Parse<UserRoleType>(request.Role, true)
@@ -94,7 +94,7 @@ public class UsersController(ApplicationDbContext context, ILogService logServic
 
         if (!string.IsNullOrEmpty(request.Password))
         {
-            existingUser.PasswordHash = request.Password; // In real app, hash this!
+            existingUser.Password = request.Password; // In real app, hash this!
         }
 
         try
@@ -133,6 +133,11 @@ public class UsersController(ApplicationDbContext context, ILogService logServic
             return NotFound();
         }
 
+        if (user.Username == "admin")
+        {
+            return BadRequest("Cannot delete the main administrator.");
+        }
+
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
 
@@ -165,7 +170,7 @@ public class UsersController(ApplicationDbContext context, ILogService logServic
 
         if (!string.IsNullOrEmpty(request.Password))
         {
-            existingUser.PasswordHash = request.Password; // In real app, hash this!
+            existingUser.Password = request.Password; // In real app, hash this!
         }
 
         // Users cannot update their own role via this endpoint

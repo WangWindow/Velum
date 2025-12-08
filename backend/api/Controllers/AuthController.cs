@@ -1,8 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Velum.Base.Data;
 using Velum.Base.Services;
@@ -14,10 +16,31 @@ namespace Velum.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController(IAuthService authService, ILogService logService) : ControllerBase
+public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService = authService;
-    private readonly ILogService _logService = logService;
+    private readonly IAuthService _authService;
+    private readonly ILogService _logService;
+    private readonly IPasswordManager _passwordManager;
+
+    public AuthController(IAuthService authService, ILogService logService, IPasswordManager passwordManager)
+    {
+        _authService = authService;
+        _logService = logService;
+        _passwordManager = passwordManager;
+    }
+
+    [HttpGet("publickey")]
+    [AllowAnonymous]
+    public IActionResult GetPublicKey()
+    {
+        var pubKey = _passwordManager.GetPublicKey();
+        if (string.IsNullOrWhiteSpace(pubKey))
+        {
+            return NotFound("RSA Encryption is disabled or keys are not configured.");
+        }
+        return Ok(new { publicKey = pubKey });
+    }
+
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
@@ -63,7 +86,7 @@ public class AuthController(IAuthService authService, ILogService logService) : 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
-        var (success, error) = await _authService.RegisterAsync(model.Username, model.Password, model.Email, model.FullName, model.AdminKey);
+        var (success, error) = await _authService.RegisterAsync(model.Username, model.Password, model.Email, model.FullName, model.RegistrationKey);
 
         if (!success)
         {
@@ -98,7 +121,7 @@ public class RegisterModel
     public required string Password { get; set; }
     public string? Email { get; set; }
     public string? FullName { get; set; }
-    public string? AdminKey { get; set; }
+    public string? RegistrationKey { get; set; }
 }
 
 public class LoginResponse

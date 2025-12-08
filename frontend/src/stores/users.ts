@@ -34,7 +34,9 @@ export const useUsersStore = defineStore('users', () => {
   async function createUser(user: Partial<User> & { password?: string }) {
     isLoading.value = true
     try {
-      const response = await api.post<User>('/users', user)
+      const payload = { ...user }
+      // Send plain password
+      const response = await api.post<User>('/users', payload)
       users.value.push(response.data)
       return true
     } catch (err: any) {
@@ -49,7 +51,9 @@ export const useUsersStore = defineStore('users', () => {
   async function updateUser(id: number, user: Partial<User> & { password?: string }) {
     isLoading.value = true
     try {
-      await api.put(`/users/${id}`, user)
+      const payload = { ...user }
+      // Send plain password
+      await api.put(`/users/${id}`, payload)
       const index = users.value.findIndex(u => u.id === id)
       if (index !== -1) {
         // Refresh users list to get updated data or manually update
@@ -64,6 +68,8 @@ export const useUsersStore = defineStore('users', () => {
       isLoading.value = false
     }
   }
+
+
 
   async function deleteUser(id: number) {
     isLoading.value = true

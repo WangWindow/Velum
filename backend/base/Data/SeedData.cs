@@ -17,7 +17,7 @@ public static class SeedData
         {
             new() {
                 Username = "admin",
-                PasswordHash = "admin123", // In real app, hash this
+                Password = "admin123",
                 Email = "admin@velum.com",
                 FullName = "System Administrator",
                 Role = UserRoleType.Admin,
@@ -25,7 +25,7 @@ public static class SeedData
             },
             new() {
                 Username = "user",
-                PasswordHash = "user123",
+                Password = "user123",
                 Email = "user@velum.com",
                 FullName = "Demo User",
                 Role = UserRoleType.User,
