@@ -8,7 +8,8 @@ HOST_PORT=17597
 CONTAINER_PORT=17597
 HTTPS_HOST_PORT=16796
 HTTPS_CONTAINER_PORT=16796
-DATA_DIR="./docker-data"
+DATA_DIR="./temp/docker-data" # 数据目录
+TEMP_CERT_DIR="./temp/docker-certs-temp" # 构建时的临时证书目录
 
 # --- 证书配置 (自动对接 1Panel) ---
 # 请将下面的路径修改为您在服务器上使用 'find' 命令找到的实际路径
@@ -33,15 +34,27 @@ function run_container() {
     # 准备数据目录
     if [ ! -d "$DATA_DIR" ]; then
         echo "创建数据目录: $DATA_DIR"
-        mkdir -p "$DATA_DIR"
+        sudo mkdir -p "$DATA_DIR"
     fi
 
     # 设置数据目录权限 (UID 1654 是 .NET Docker 镜像中 app 用户的 ID)
     echo "设置数据目录 $DATA_DIR 权限..."
     sudo chown -R 1654:1654 "$DATA_DIR"
+    sudo chmod 777 "$DATA_DIR"
+
+    # 检查并准备 appsettings.local.json
+    LOCAL_SETTINGS="backend/api/appsettings.local.json"
+    MOUNT_SETTINGS=""
+    if [ -f "$LOCAL_SETTINGS" ]; then
+        echo "✅ 发现本地配置文件: $LOCAL_SETTINGS"
+        MOUNT_SETTINGS="-v $(pwd)/$LOCAL_SETTINGS:/app/appsettings.local.json"
+    else
+        echo "⚠️ 警告: 未找到 $LOCAL_SETTINGS"
+        echo "   如果需要使用自定义 API Key，请确保该文件存在。"
+    fi
 
     # 检查证书目录是否存在
-    if [ ! -d "$CERT_SOURCE_PATH" ]; then
+    if ! sudo test -d "$CERT_SOURCE_PATH"; then
         echo "❌ 错误: 找不到证书目录: $CERT_SOURCE_PATH"
         echo "请在服务器上运行以下命令查找正确路径，并修改脚本中的 CERT_SOURCE_PATH:"
         echo "sudo find /opt/1panel -name \"fullchain.pem\" | grep \"azure.modestwang.cn\""
@@ -52,9 +65,8 @@ function run_container() {
 
     # 复制证书到临时目录并设置权限
     # 解决 1Panel 证书目录权限问题 (System.UnauthorizedAccessException)
-    TEMP_CERT_DIR="./docker-certs-temp"
     if [ ! -d "$TEMP_CERT_DIR" ]; then
-        mkdir -p "$TEMP_CERT_DIR"
+        sudo mkdir -p "$TEMP_CERT_DIR"
     fi
 
     echo "复制证书到临时目录..."
@@ -76,6 +88,7 @@ function run_container() {
         -p $HTTPS_HOST_PORT:$HTTPS_CONTAINER_PORT \
         -v "$(pwd)/$DATA_DIR:/data" \
         -v "$(pwd)/$TEMP_CERT_DIR:/https:ro" \
+        $MOUNT_SETTINGS \
         -e "ConnectionStrings__DefaultConnection=Data Source=/data/velum.db" \
         -e "ASPNETCORE_URLS=http://+:$CONTAINER_PORT;https://+:$HTTPS_CONTAINER_PORT" \
         -e "ASPNETCORE_Kestrel__Certificates__Default__Path=/https/$CERT_PUBLIC_KEY" \
