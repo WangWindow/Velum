@@ -101,10 +101,13 @@ const toggleSidebar = () => {
           <div v-if="showUserMenu"
             class="absolute right-0 mt-2 w-56 rounded-md border bg-popover p-1 text-popover-foreground shadow-md z-50">
             <div class="px-2 py-1.5 text-sm font-semibold">
-              {{ authStore.user?.fullName || authStore.user?.username }}
+              <span v-if="authStore.user?.fullName">{{ authStore.user.fullName }}</span>
             </div>
             <div class="px-2 py-1.5 text-xs text-muted-foreground truncate">
-              {{ authStore.user?.email }}
+              <span v-if="authStore.user?.username">ID: {{ authStore.user.username }}</span>
+            </div>
+            <div class="px-2 py-1.5 text-xs text-muted-foreground truncate">
+              <span v-if="authStore.user?.email">{{ authStore.user.email }}</span>
             </div>
             <div class="h-px bg-muted my-1" />
             <RouterLink to="/user/settings"
