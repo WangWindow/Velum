@@ -50,7 +50,7 @@ Velum 致力于为心理健康服务提供**数据驱动的洞察**与**安全�
 <summary><strong>🛠️ 环境变量与配置文件</strong></summary>
 
 ### 1. 后端配置
-后端支持通过 `appsettings.json` (默认) 或 `appsettings.Local.json` (本地覆盖，**不会提交到 Git**) 进行配置。
+后端支持通过 `appsettings.json` (默认) 或 `appsettings.local.json` (本地覆盖，**不会提交到 Git**) 进行配置。
 
 **关键配置项说明：**
 
@@ -64,8 +64,16 @@ Velum 致力于为心理健康服务提供**数据驱动的洞察**与**安全�
 | `OpenAI` | `ApiKey` | **[必填]** AI 服务密钥 | `sk-...` |
 | `OpenAI` | `Model` | 使用的模型名称 | `gpt-4o` / `deepseek-chat` |
 | `AdminSettings` | `RegistrationKey` | 管理员注册邀请码 | `114514` |
+| `Rsa` | `Enabled` | 是否启用前后端密码加密传输 | `true`/`false` |
+| `Rsa` | `PublicKey` | RSA 公钥 (Base64) | 自动生成或手动填写 |
+| `Rsa` | `PrivateKey` | RSA 私钥 (Base64) | 自动生成或手动填写 |
 
-> **生产环境建议**：在 Docker 或云平台中，建议使用环境变量覆盖上述配置（如 `Jwt__Key`, `OpenAI__ApiKey`），而不是修改文件。
+> **密码加密机制说明：**
+> - 启用加密 (`Rsa:Enabled=true`) 且未配置密钥时，后端会自动生成一对 RSA 密钥并打印在终端。
+> - 请将生成的密钥复制到 `appsettings.json` 或环境变量中，**公钥无需配置到前端，前端会自动通过 `/api/auth/publickey` 获取**。
+> - 若禁用加密 (`Rsa:Enabled=false`)，前后端将以明文方式传输密码，仅建议用于本地调试。
+
+> **生产环境建议**：在 Docker 或云平台中，建议使用环境变量覆盖上述配置（如 `Jwt__Key`, `OpenAI__ApiKey`, `Rsa__Enabled`, `Rsa__PublicKey`, `Rsa__PrivateKey`），而不是修改文件。
 
 ### 2. Docker 部署配置
 使用 `scripts/backend-docker.sh` 部署时，需注意：
@@ -79,6 +87,7 @@ Velum 致力于为心理健康服务提供**数据驱动的洞察**与**安全�
 **模式 A：直连模式 (默认，推荐)**
 - 前端直接请求 `https://azure.modestwang.cn:16796/api`。
 - **无需**配置 Vercel 环境变量。
+- **无需配置 RSA 公钥，前端自动获取。**
 
 **模式 B：代理模式 (可选)**
 如果您希望隐藏后端端口或解决某些跨域问题，可启用 Vercel 代理：
@@ -96,6 +105,42 @@ Velum 致力于为心理健康服务提供**数据驱动的洞察**与**安全�
 | `scripts/backend-docker.sh` | Linux | 构建并运行后端 Docker 容器 (自动挂载证书) |
 
 </details>
+
+---
+
+## 🧩 API & 管理后台 UI 说明
+
+### 1. API 文档与调试
+
+- 后端默认集成了 OpenAPI/Swagger 文档。
+- 启动后端服务后，访问：
+  - `https://localhost:16796/swagger` 或 `http://localhost:17597/swagger`
+  - 可在线查看所有接口、参数说明，并直接调试。
+- 主要接口包括：
+  - `/api/auth/*`：登录、注册、获取公钥
+  - `/api/users/*`：用户管理
+  - `/api/assessments/*`：测评相关
+  - `/api/chat/*`：AI 对话与分析
+  - `/api/dashboard/*`：数据统计与仪表盘
+
+> **小贴士**：开发环境下建议用 Swagger 进行接口联调，生产环境建议关闭或加密访问。
+
+### 2. 管理后台 UI
+
+- 前端采用 Vue 3 + Pinia + Vite 构建，界面简洁流畅。
+- 管理后台入口：
+  - 开发环境：`http://localhost:14514`（`npm run dev` 或 `bun dev` 启动）
+  - 生产环境：部署后访问对应域名或端口
+- 功能模块：
+  - 用户登录/注册（支持 RSA 加密）
+  - 测评问卷管理与数据分析
+  - AI 聊天与心理分析
+  - 管理员仪表盘与权限控制
+- 支持桌面端（Tauri）与 Web 端一体化体验。
+
+> **前端与后端联动说明**：
+> - 前端所有 API 请求基于统一的 `VITE_API_BASE_URL`（默认直连后端，无需代理）。
+> - 密码加密由前端自动获取公钥并加密，无需手动配置。
 
 ---
 

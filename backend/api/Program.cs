@@ -66,9 +66,12 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// Enable OpenAPI/Swagger in all environments for easier testing
-app.MapOpenApi();
-app.MapScalarApiReference();
+if (!app.Environment.IsProduction())
+{
+    // 仅在非生产环境启用 OpenAPI/Swagger
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
 
 // Enable HTTPS redirection
 app.UseHttpsRedirection();
