@@ -46,11 +46,21 @@ function run_container() {
 
     echo "✅ 已找到证书目录: $CERT_SOURCE_PATH"
 
-    # 设置权限
-    echo "设置数据目录权限..."
-    sudo chown -R 1654:1654 "$DATA_DIR"
-    # 注意：我们不修改 1Panel 证书目录的权限，以免影响 1Panel。
-    # 容器将以只读方式挂载证书。
+    # 复制证书到临时目录并设置权限
+    # 解决 1Panel 证书目录权限问题 (System.UnauthorizedAccessException)
+    TEMP_CERT_DIR="./docker-certs-temp"
+    if [ ! -d "$TEMP_CERT_DIR" ]; then
+        mkdir -p "$TEMP_CERT_DIR"
+    fi
+
+    echo "复制证书到临时目录..."
+    sudo cp "$CERT_SOURCE_PATH/$CERT_PUBLIC_KEY" "$TEMP_CERT_DIR/"
+    sudo cp "$CERT_SOURCE_PATH/$CERT_PRIVATE_KEY" "$TEMP_CERT_DIR/"
+
+    echo "设置证书权限..."
+    sudo chown -R 1654:1654 "$TEMP_CERT_DIR"
+    sudo chmod 644 "$TEMP_CERT_DIR/$CERT_PUBLIC_KEY"
+    sudo chmod 644 "$TEMP_CERT_DIR/$CERT_PRIVATE_KEY"
 
     # 清理旧容器
     sudo docker rm -f $CONTAINER_NAME 2>/dev/null || true
@@ -61,7 +71,7 @@ function run_container() {
         -p $HOST_PORT:$CONTAINER_PORT \
         -p $HTTPS_HOST_PORT:$HTTPS_CONTAINER_PORT \
         -v "$(pwd)/$DATA_DIR:/data" \
-        -v "$CERT_SOURCE_PATH:/https:ro" \
+        -v "$(pwd)/$TEMP_CERT_DIR:/https:ro" \
         -e "ConnectionStrings__DefaultConnection=Data Source=/data/velum.db" \
         -e "ASPNETCORE_URLS=http://+:$CONTAINER_PORT;https://+:$HTTPS_CONTAINER_PORT" \
         -e "ASPNETCORE_Kestrel__Certificates__Default__Path=/https/$CERT_PUBLIC_KEY" \
