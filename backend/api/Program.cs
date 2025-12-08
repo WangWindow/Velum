@@ -20,6 +20,7 @@ if (!string.IsNullOrEmpty(connectionString))
 }
 
 builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
