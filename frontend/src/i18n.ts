@@ -348,6 +348,7 @@ const messages = {
       registrationSuccess: 'Registration successful',
       registrationSuccessDesc: 'Please login with your new account.',
       registrationFailed: 'Registration failed',
+      registrationKeyRequired: 'Registration key is required',
       loginFailed: 'Login failed',
       loginFailedDesc: 'Please check your credentials and try again.'
     },
@@ -703,6 +704,7 @@ const messages = {
       registrationSuccess: '注册成功',
       registrationSuccessDesc: '请使用您的新帐户登录。',
       registrationFailed: '注册失败',
+      registrationKeyRequired: '注册码不能为空',
       loginFailed: '登录失败',
       loginFailedDesc: '请检查您的凭据并重试。'
     },

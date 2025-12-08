@@ -61,6 +61,13 @@ public class AuthService(ApplicationDbContext context, IConfiguration configurat
             return (false, "Username already exists");
         }
 
+        // 校验注册码
+        var requiredKey = _configuration["AdminSettings:RegistrationKey"];
+        if (string.IsNullOrWhiteSpace(registrationKey) || registrationKey != requiredKey)
+        {
+            return (false, "Invalid or missing registration key");
+        }
+
         // Decrypt password if encryption is enabled
         string plainPassword;
         try

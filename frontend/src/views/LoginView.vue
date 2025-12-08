@@ -25,6 +25,15 @@ const isLoading = ref(false)
 const handleSubmit = async () => {
   if (!username.value || !password.value) return
 
+  if (isRegistering.value && !registrationKey.value) {
+    toast({
+      title: t('login.registrationFailed'),
+      description: t('login.registrationKeyRequired'),
+      variant: 'destructive',
+    })
+    return
+  }
+
   isLoading.value = true
 
   let success = false

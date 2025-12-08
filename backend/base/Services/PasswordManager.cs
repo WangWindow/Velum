@@ -1,5 +1,7 @@
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Velum.Core.Interfaces;
@@ -40,6 +42,34 @@ public class PasswordManager : IPasswordManager
             using var rsa = RSA.Create(2048);
             _privateKey = Convert.ToBase64String(rsa.ExportPkcs8PrivateKey());
             _publicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo());
+
+            // 自动写入 appsettings.Local.json
+            try
+            {
+                var localPath = Path.Combine(AppContext.BaseDirectory, "appsettings.local.json");
+                string json = File.Exists(localPath) ? File.ReadAllText(localPath) : "{}";
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+                var root = doc.RootElement.Clone();
+                using var ms = new MemoryStream();
+                using (var writer = new Utf8JsonWriter(ms, new JsonWriterOptions { Indented = true }))
+                {
+                    var dic = root.EnumerateObject().ToDictionary(p => p.Name, p => p.Value);
+                    dic["Rsa"] = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>($"{{\"Enabled\": true, \"PublicKey\": \"{_publicKey}\", \"PrivateKey\": \"{_privateKey}\"}}");
+                    writer.WriteStartObject();
+                    foreach (var kv in dic)
+                    {
+                        writer.WritePropertyName(kv.Key);
+                        kv.Value.WriteTo(writer);
+                    }
+                    writer.WriteEndObject();
+                }
+                File.WriteAllText(localPath, System.Text.Encoding.UTF8.GetString(ms.ToArray()));
+                Console.WriteLine($"RSA keys have been automatically written to {localPath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to automatically write to appsettings.local.json: {ex.Message}");
+            }
 
             // 4. Print keys to terminal for the developer
             var border = new string('=', 50);
