@@ -36,6 +36,10 @@ function run_container() {
         mkdir -p "$DATA_DIR"
     fi
 
+    # 设置数据目录权限 (UID 1654 是 .NET Docker 镜像中 app 用户的 ID)
+    echo "设置数据目录 $DATA_DIR 权限..."
+    sudo chown -R 1654:1654 "$DATA_DIR"
+
     # 检查证书目录是否存在
     if [ ! -d "$CERT_SOURCE_PATH" ]; then
         echo "❌ 错误: 找不到证书目录: $CERT_SOURCE_PATH"

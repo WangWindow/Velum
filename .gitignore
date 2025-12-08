@@ -11,6 +11,7 @@
 *.sqlite3
 *.db-shm
 *.db-wal
+*.pem
 
 ### Linux ###
 *~
@@ -34,7 +35,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -107,4 +109,3 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/windows,visualstudiocode,macos,linux,database
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
-
