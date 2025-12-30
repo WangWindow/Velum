@@ -65,7 +65,7 @@ const option = computed(() => {
 </script>
 
 <template>
-  <div class="h-[300px] w-full">
+  <div class="h-75 w-full">
     <Chart :option="option" />
   </div>
 </template>

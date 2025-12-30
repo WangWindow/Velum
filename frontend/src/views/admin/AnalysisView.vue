@@ -242,7 +242,7 @@ function getColor(index: number) {
           <CardHeader>
             <CardTitle>{{ t('analysis.averageScores') }}</CardTitle>
           </CardHeader>
-          <CardContent class="h-[300px]">
+          <CardContent class="h-75">
             <Chart v-if="overallStats" :option="barOption" />
           </CardContent>
         </Card>
@@ -251,7 +251,7 @@ function getColor(index: number) {
           <CardHeader>
             <CardTitle>{{ t('analysis.distribution') }}</CardTitle>
           </CardHeader>
-          <CardContent class="h-[300px] flex justify-center">
+          <CardContent class="h-75 flex justify-center">
             <Chart v-if="overallStats" :option="pieOption" />
           </CardContent>
         </Card>
@@ -265,11 +265,11 @@ function getColor(index: number) {
         </CardHeader>
         <CardContent class="space-y-6">
           <div class="flex gap-4 items-center flex-wrap">
-            <div class="relative w-full md:w-[200px]">
+            <div class="relative w-full md:w-50">
               <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input v-model="userSearch" :placeholder="t('analysis.searchUser')" class="pl-8" />
             </div>
-            <div class="w-full md:w-[300px]">
+            <div class="w-full md:w-75">
               <Select v-model="selectedUserId" @update:model-value="handleUserChange">
                 <SelectTrigger>
                   <SelectValue :placeholder="t('analysis.selectUser')" />
@@ -284,7 +284,7 @@ function getColor(index: number) {
           </div>
 
           <div v-if="currentUserAnalysis" class="space-y-6">
-            <div class="h-[300px]">
+            <div class="h-75">
               <Chart :option="lineOption" />
             </div>
 

@@ -157,7 +157,7 @@ const handleBatchDelete = async () => {
         <Input v-model="searchQuery" :placeholder="t('common.search') || 'Search...'" class="pl-8" />
       </div>
       <Select v-model="selectedLevel">
-        <SelectTrigger class="w-[180px]">
+        <SelectTrigger class="w-45">
           <SelectValue placeholder="Filter by level" />
         </SelectTrigger>
         <SelectContent>
@@ -184,7 +184,7 @@ const handleBatchDelete = async () => {
         <Table v-else>
           <TableHeader>
             <TableRow>
-              <TableHead class="w-[50px]">
+              <TableHead class="w-12.5">
                 <Checkbox :checked="selectedLogs.length === logs.length && logs.length > 0"
                   @update:checked="toggleSelectAll" />
               </TableHead>
@@ -193,7 +193,7 @@ const handleBatchDelete = async () => {
               <TableHead>{{ t('logs.user') }}</TableHead>
               <TableHead>{{ t('logs.action') }}</TableHead>
               <TableHead>{{ t('logs.message') }}</TableHead>
-              <TableHead class="w-[50px]"></TableHead>
+              <TableHead class="w-12.5"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -210,7 +210,7 @@ const handleBatchDelete = async () => {
               </TableCell>
               <TableCell>{{ log.userName || '-' }}</TableCell>
               <TableCell>{{ log.action || '-' }}</TableCell>
-              <TableCell class="max-w-[300px] truncate" :title="log.message">{{ log.message }}</TableCell>
+              <TableCell class="max-w-75 truncate" :title="log.message">{{ log.message }}</TableCell>
               <TableCell>
                 <Button variant="ghost" size="icon" @click="confirmDeleteLog(log.id)">
                   <Trash2 class="h-4 w-4 text-muted-foreground hover:text-destructive" />

@@ -13,6 +13,28 @@ import { Loader2, Search, Download, FileSpreadsheet, Filter } from 'lucide-vue-n
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Label } from '@/components/ui/label'
 import api from '@/lib/api'
+import { exportCsv } from '@/lib/exportCsv'
+// 导出CSV功能
+function exportToCsv() {
+  if (!exportData.value || !exportData.value.columns) return
+  const columns = exportData.value.columns
+  const rows = filteredExportRows.value
+  if (!rows.length) return
+  // 生成CSV内容
+  const csvRows = []
+  csvRows.push(columns.map(col => `"${col.replace(/"/g, '""')}"`).join(','))
+  for (const row of rows) {
+    csvRows.push(
+      columns.map(col => {
+        const val = row[col] ?? ''
+        return `"${String(val).replace(/"/g, '""')}"`
+      }).join(',')
+    )
+  }
+  const csvContent = '\uFEFF' + csvRows.join('\r\n') // BOM for Excel兼容
+  const filename = `export_${selectedQuestionnaireId.value || 'data'}.csv`
+  exportCsv(filename, csvContent)
+}
 
 const { t } = useI18n()
 const analysisStore = useAnalysisStore()
@@ -27,6 +49,19 @@ const advancedFilters = ref({
   dateFrom: '',
   dateTo: ''
 })
+// 查询条件缓存，只有点击搜索按钮时才更新
+const querySearch = ref('')
+const queryFilters = ref({
+  minScore: '',
+  maxScore: '',
+  dateFrom: '',
+  dateTo: ''
+})
+
+function handleSearch() {
+  querySearch.value = dataSearch.value
+  queryFilters.value = { ...advancedFilters.value }
+}
 
 // State for Games Tab
 const gameScores = ref<any[]>([])
@@ -38,19 +73,48 @@ const filteredExportRows = computed(() => {
   if (!exportData.value) return []
   let rows = exportData.value.rows
 
-  // Basic Search
-  if (dataSearch.value) {
-    const search = dataSearch.value.toLowerCase()
+  // 基础搜索
+  if (querySearch.value) {
+    const search = querySearch.value.toLowerCase()
     rows = rows.filter(row =>
       Object.values(row).some(val => String(val).toLowerCase().includes(search))
     )
   }
 
-  // Advanced Filters (Client-side for now)
-  // Note: This assumes 'Score' and 'Date' columns exist in the dynamic data, which might not always be true or named exactly so.
-  // For a robust solution, we'd need standardized column keys from backend.
-  // Here we just demonstrate the UI structure.
+  // 高级筛选：分数和日期
+  const minScore = queryFilters.value.minScore !== '' ? Number(queryFilters.value.minScore) : null
+  const maxScore = queryFilters.value.maxScore !== '' ? Number(queryFilters.value.maxScore) : null
+  const dateFrom = queryFilters.value.dateFrom ? new Date(queryFilters.value.dateFrom) : null
+  const dateTo = queryFilters.value.dateTo ? new Date(queryFilters.value.dateTo) : null
 
+  // 尝试自动识别分数和日期字段名
+  // 优先找名为Score/score/分数，Date/date/日期的字段
+  const scoreKey = exportData.value.columns.find(col => /score|分数/i.test(col))
+  const dateKey = exportData.value.columns.find(col => /date|日期/i.test(col))
+
+  if (scoreKey && (minScore !== null || maxScore !== null)) {
+    rows = rows.filter(row => {
+      const val = Number(row[scoreKey])
+      if (isNaN(val)) return false
+      if (minScore !== null && val < minScore) return false
+      if (maxScore !== null && val > maxScore) return false
+      return true
+    })
+  }
+  if (dateKey && (dateFrom || dateTo)) {
+    rows = rows.filter(row => {
+      const d = row[dateKey] ? new Date(row[dateKey]) : null
+      if (!d || isNaN(d.getTime())) return false
+      if (dateFrom && d < dateFrom) return false
+      if (dateTo) {
+        // 包含当天
+        const to = new Date(dateTo)
+        to.setHours(23, 59, 59, 999)
+        if (d > to) return false
+      }
+      return true
+    })
+  }
   return rows
 })
 
@@ -116,7 +180,7 @@ onMounted(() => {
           <CardContent class="space-y-6">
             <!-- Toolbar -->
             <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
-              <div class="w-full md:w-[250px]">
+              <div class="w-full md:w-62.5">
                 <Select v-model="selectedQuestionnaireId" @update:model-value="handleLoadData">
                   <SelectTrigger>
                     <SelectValue :placeholder="t('analysis.selectQuestionnaire')" />
@@ -130,9 +194,14 @@ onMounted(() => {
                 </Select>
               </div>
 
-              <div class="relative w-full md:w-[300px]">
+
+              <div class="relative w-full md:w-75 flex items-center gap-2">
                 <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input v-model="dataSearch" :placeholder="t('analysis.searchData')" class="pl-8" />
+                <Input v-model="dataSearch" :placeholder="t('analysis.searchData')" class="pl-8"
+                  @keyup.enter="handleSearch" />
+                <Button variant="secondary" class="ml-2" @click="handleSearch">
+                  {{ t('query.search') }}
+                </Button>
               </div>
 
               <!-- Advanced Filter Popover -->
@@ -173,7 +242,7 @@ onMounted(() => {
                 </PopoverContent>
               </Popover>
 
-              <Button variant="outline" class="ml-auto">
+              <Button variant="outline" class="ml-auto" @click="exportToCsv" :disabled="!exportData">
                 <Download class="mr-2 h-4 w-4" />
                 {{ t('analysis.exportCsv') }}
               </Button>
@@ -218,7 +287,7 @@ onMounted(() => {
           </CardHeader>
           <CardContent class="space-y-6">
             <div class="flex items-center gap-4">
-              <div class="relative w-[300px]">
+              <div class="relative w-75">
                 <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input v-model="gameSearch" :placeholder="t('query.searchGames')" class="pl-8" />
               </div>

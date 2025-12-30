@@ -90,7 +90,7 @@ const confirmDeleteTask = async () => {
             {{ t('tasks.assignTask') }}
           </Button>
         </DialogTrigger>
-        <DialogContent class="sm:max-w-[425px]">
+        <DialogContent class="sm:max-w-106.25">
           <DialogHeader>
             <DialogTitle>{{ t('tasks.assignNewTask') }}</DialogTitle>
             <DialogDescription>
@@ -153,7 +153,7 @@ const confirmDeleteTask = async () => {
         <TableCaption>{{ t('tasks.caption') }}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead class="w-[100px]">{{ t('tasks.id') }}</TableHead>
+            <TableHead class="w-25">{{ t('tasks.id') }}</TableHead>
             <TableHead>{{ t('tasks.user') }}</TableHead>
             <TableHead>{{ t('tasks.questionnaire') }}</TableHead>
             <TableHead>{{ t('tasks.status') }}</TableHead>

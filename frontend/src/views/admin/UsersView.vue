@@ -124,7 +124,7 @@ const confirmDeleteUser = async () => {
             {{ t('users.addUser') }}
           </Button>
         </DialogTrigger>
-        <DialogContent class="sm:max-w-[425px]">
+        <DialogContent class="sm:max-w-106.25">
           <DialogHeader>
             <DialogTitle>{{ t('users.addUser') }}</DialogTitle>
             <DialogDescription>
@@ -168,7 +168,7 @@ const confirmDeleteUser = async () => {
       </Dialog>
 
       <Dialog v-model:open="isEditDialogOpen">
-        <DialogContent class="sm:max-w-[425px]">
+        <DialogContent class="sm:max-w-106.25">
           <DialogHeader>
             <DialogTitle>{{ t('users.edit') }}</DialogTitle>
             <DialogDescription>

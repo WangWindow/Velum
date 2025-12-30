@@ -134,7 +134,7 @@ const userInitials = computed(() => {
             <div class="flex items-center space-x-4">
               <Label for="language">{{ t('settings.language') }}</Label>
               <Select :model-value="locale" @update:model-value="changeLanguage">
-                <SelectTrigger id="language" class="w-[180px]">
+                <SelectTrigger id="language" class="w-45">
                   <SelectValue :placeholder="t('settings.selectLanguage')" />
                 </SelectTrigger>
                 <SelectContent>

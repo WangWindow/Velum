@@ -184,7 +184,7 @@ const saveConfig = () => {
       </div>
     </div> <!-- Mobile History Sheet -->
     <Sheet v-model:open="isMobileHistoryOpen">
-      <SheetContent side="left" class="w-[80%] sm:w-[350px] p-0">
+      <SheetContent side="left" class="w-[80%] sm:w-87.5 p-0">
         <div class="flex flex-col h-full p-4">
           <SheetHeader class="mb-4">
             <SheetTitle>{{ t('chat.history') }}</SheetTitle>
@@ -338,7 +338,7 @@ const saveConfig = () => {
       <!-- Input Area -->
       <div class="relative shrink-0 pt-2 pb-2 px-2">
         <Textarea v-model="inputMessage" :placeholder="t('chat.typeMessage')"
-          class="min-h-[60px] max-h-[200px] resize-none pr-14 py-3 bg-background border-input focus-visible:ring-1 focus-visible:ring-ring rounded-xl shadow-sm"
+          class="min-h-15 max-h-50 resize-none pr-14 py-3 bg-background border-input focus-visible:ring-1 focus-visible:ring-ring rounded-xl shadow-sm"
           @keydown.enter.prevent="handleSendMessage" />
         <Button size="icon"
           class="absolute right-4 bottom-4 h-8 w-8 rounded-full transition-transform active:scale-95 shadow-sm"
@@ -367,7 +367,7 @@ const saveConfig = () => {
 
     <!-- Manage Sessions Dialog -->
     <Dialog v-model:open="isManageDialogOpen">
-      <DialogContent class="sm:max-w-[500px] max-h-[80vh] flex flex-col">
+      <DialogContent class="sm:max-w-125 max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{{ t('chat.manage') }}</DialogTitle>
           <DialogDescription>{{ t('chat.manageDesc') }}</DialogDescription>

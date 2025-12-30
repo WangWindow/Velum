@@ -91,7 +91,7 @@ const navigateToAnalysis = () => router.push('/admin/analysis')
           </CardHeader>
           <CardContent class="pl-2">
             <OverviewChart v-if="chartData" :data="chartData" />
-            <div v-else class="h-[300px] flex items-center justify-center text-muted-foreground">
+            <div v-else class="h-75 flex items-center justify-center text-muted-foreground">
               {{ t('dashboard.noData') }}
             </div>
           </CardContent>

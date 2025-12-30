@@ -137,7 +137,7 @@ const confirmDelete = async () => {
         </CardHeader>
         <CardContent class="flex-1">
           <Textarea v-model="rawText" :placeholder="t('scales.placeholder')"
-            class="h-full min-h-[300px] resize-none font-mono text-sm" />
+            class="h-full min-h-75 resize-none font-mono text-sm" />
         </CardContent>
         <CardFooter class="justify-between">
           <Button variant="ghost" @click="handleClear" :disabled="scalesStore.isAnalyzing">

@@ -208,7 +208,8 @@ const messages = {
       minScore: 'Min Score',
       maxScore: 'Max Score',
       dateFrom: 'Date From',
-      dateTo: 'Date To'
+      dateTo: 'Date To',
+      search: 'Search'
     },
     analysis: {
       title: 'Data Analysis',
@@ -564,7 +565,8 @@ const messages = {
       minScore: '最低分',
       maxScore: '最高分',
       dateFrom: '开始日期',
-      dateTo: '结束日期'
+      dateTo: '结束日期',
+      search: '搜索'
     },
     analysis: {
       title: '数据分析',
