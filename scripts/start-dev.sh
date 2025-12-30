@@ -27,4 +27,4 @@ trap 'echo -e "\n\033[31m🛑 Stopping background services...\033[0m"; kill $API
 echo -e "\033[33m⚡ Launching Web Frontend (Vue)...\033[0m"
 echo -e "\033[33mPress Ctrl+C to stop all services.\033[0m"
 cd "$WEB_PATH"
-bun dev
+npm run dev

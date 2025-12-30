@@ -16,8 +16,10 @@ const router = useRouter()
 const tasksStore = useTasksStore()
 const assessmentStore = useAssessmentStore()
 
+
 const { tasks } = storeToRefs(tasksStore)
 const { myAssessments } = storeToRefs(assessmentStore)
+const pendingTasks = computed(() => tasks.value.filter(t => t.status !== 'Completed'))
 
 onMounted(() => {
   tasksStore.fetchMyTasks()
@@ -85,7 +87,7 @@ const chartData = computed(() => {
           <ClipboardList class="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div class="text-2xl font-bold">{{ tasks.length }}</div>
+          <div class="text-2xl font-bold">{{ pendingTasks.length }}</div>
         </CardContent>
       </Card>
       <Card>
@@ -115,10 +117,10 @@ const chartData = computed(() => {
           <CardTitle>{{ t('dashboard.myProgress') }}</CardTitle>
         </CardHeader>
         <CardContent class="pl-2">
-          <div v-if="myAssessments.length > 0" class="h-[350px]">
+          <div v-if="myAssessments.length > 0" class="h-87.5">
             <OverviewChart :data="chartData" />
           </div>
-          <div v-else class="h-[350px] flex items-center justify-center text-muted-foreground">
+          <div v-else class="h-87.5 flex items-center justify-center text-muted-foreground">
             {{ t('dashboard.noHistory') }}
           </div>
         </CardContent>
@@ -134,21 +136,20 @@ const chartData = computed(() => {
             </CardTitle>
           </CardHeader>
           <CardContent class="flex-1 p-0">
-            <ScrollArea class="h-[150px]">
+            <ScrollArea class="h-37.5">
               <div class="p-6 pt-0">
-                <div v-if="tasks.length === 0" class="text-center py-6 text-muted-foreground">
+                <div v-if="pendingTasks.length === 0" class="text-center py-6 text-muted-foreground">
                   {{ t('dashboard.noTasks') }}
                 </div>
                 <div v-else class="space-y-4">
-                  <div v-for="task in tasks" :key="task.id"
+                  <div v-for="task in pendingTasks" :key="task.id"
                     class="flex items-center justify-between border-b pb-2 last:border-0">
                     <div class="min-w-0 flex-1 mr-2">
                       <p class="font-medium truncate">{{ task.questionnaire?.title }}</p>
                       <p class="text-xs text-muted-foreground">{{ t('tasks.dueDate') }}: {{ task.dueDate ? new
                         Date(task.dueDate).toLocaleDateString() : t('tasks.noDueDate') }}</p>
                     </div>
-                    <Button v-if="task.status !== 'Completed'" size="sm" variant="secondary"
-                      @click="navigateToAssessment(task.questionnaireId)">
+                    <Button size="sm" variant="secondary" @click="navigateToAssessment(task.questionnaireId)">
                       {{ t('assessment.start') }}
                     </Button>
                   </div>
@@ -166,7 +167,7 @@ const chartData = computed(() => {
             </CardTitle>
           </CardHeader>
           <CardContent class="flex-1 p-0">
-            <ScrollArea class="h-[150px]">
+            <ScrollArea class="h-37.5">
               <div class="p-6 pt-0">
                 <div v-if="myAssessments.length === 0" class="text-center py-6 text-muted-foreground">
                   {{ t('dashboard.noHistory') }}

@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { useAssessmentStore } from '@/stores/assessment'
+import { useTasksStore } from '@/stores/tasks'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { ArrowLeft, CheckCircle2, PlayCircle } from 'lucide-vue-next'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useRoute } from 'vue-router'
@@ -17,26 +18,38 @@ const { t } = useI18n()
 const { toast } = useToast()
 const route = useRoute()
 const store = useAssessmentStore()
+const tasksStore = useTasksStore()
+
+const { tasks } = tasksStore
+const pendingTasks = computed(() => tasks.filter(t => t.status !== 'Completed'))
+import type { Task } from '@/stores/tasks'
+const currentTask = ref<Task | null>(null)
+
 
 onMounted(async () => {
-  await store.fetchAssessments()
+  await tasksStore.fetchMyTasks()
+  // 若通过路由参数 id 进入，自动进入评估
   const id = route.query.id
   if (id) {
-    handleStart(Number(id))
+    const task = tasks.find(t => t.id === Number(id))
+    if (task) handleStart(task)
   }
 })
 
-const handleStart = (id: number) => {
-  store.startAssessment(id)
+const handleStart = (task: Task) => {
+  currentTask.value = task
+  store.startAssessment(task.questionnaireId)
 }
 
 const handleSubmit = async () => {
-  const success = await store.submitAssessment()
+  const success = await store.submitAssessment(currentTask.value?.id)
   if (success) {
     toast({
       title: t('assessment.submitted'),
       description: t('assessment.submittedDesc'),
     })
+    await tasksStore.fetchMyTasks()
+    currentTask.value = null
   }
 }
 
@@ -71,33 +84,37 @@ const toggleSelection = (questionId: number, value: string) => {
       </div>
 
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card v-for="assessment in store.assessments" :key="assessment.id" class="flex flex-col">
+        <Card v-for="task in pendingTasks" :key="task.id" class="flex flex-col">
           <CardHeader>
-            <CardTitle>{{ assessment.title }}</CardTitle>
-            <CardDescription>{{ assessment.description }}</CardDescription>
+            <CardTitle>{{ task.questionnaire?.title }}</CardTitle>
           </CardHeader>
           <CardContent class="flex-1">
             <div class="flex items-center text-sm text-muted-foreground">
               <span class="flex items-center gap-1">
                 <CheckCircle2 class="h-4 w-4" />
-                {{ assessment.questions.length }} {{ t('assessment.questions') }}
+                {{ t('assessment.questions') }}
               </span>
+              <span class="ml-2">{{ t('tasks.dueDate') }}: {{ task.dueDate ? new Date(task.dueDate).toLocaleDateString()
+                : t('tasks.noDueDate') }}</span>
             </div>
           </CardContent>
           <CardFooter>
-            <Button class="w-full" @click="handleStart(assessment.id)">
+            <Button class="w-full" @click="handleStart(task)">
               <PlayCircle class="mr-2 h-4 w-4" />
               {{ t('assessment.start') }}
             </Button>
           </CardFooter>
         </Card>
+        <div v-if="pendingTasks.length === 0" class="col-span-full text-center text-muted-foreground py-8">
+          {{ t('dashboard.noTasks') }}
+        </div>
       </div>
     </div>
 
     <!-- Taking Assessment View -->
     <div v-else class="max-w-3xl mx-auto space-y-8 pb-10">
       <div class="flex items-center gap-4">
-        <Button variant="ghost" size="icon" @click="store.exitAssessment">
+        <Button variant="ghost" size="icon" @click="() => { store.exitAssessment(); currentTask = null }">
           <ArrowLeft class="h-4 w-4" />
         </Button>
         <div>

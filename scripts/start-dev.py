@@ -42,7 +42,7 @@ def main():
     print("\033[33m⚡ Launching Web Frontend (Vue)...\033[0m")
     print("\033[33mPress Ctrl+C to stop all services.\033[0m")
     try:
-        subprocess.run(["bun", "dev"], cwd=WEB_PATH)
+        subprocess.run(["npm", "run", "dev"], cwd=WEB_PATH)
     except KeyboardInterrupt:
         pass
     finally:

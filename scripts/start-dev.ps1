@@ -29,7 +29,7 @@ try {
     Write-Host "⚡ Launching Web Frontend (Vue)..." -ForegroundColor Yellow
     Write-Host "Press Ctrl+C to stop all services." -ForegroundColor Yellow
     Set-Location $WebPath
-    bun dev
+    npm run dev
 }
 finally {
     Write-Host "`n🛑 Stopping background services..." -ForegroundColor Red
