@@ -34,6 +34,13 @@ export const useChatStore = defineStore('chat', () => {
   })
   const isLoading = ref(false)
 
+  function buildApiUrl(path: string) {
+    const baseURL = api.defaults.baseURL || ''
+    const normalizedBase = baseURL.replace(/\/$/, '')
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`
+    return `${normalizedBase}${normalizedPath}`
+  }
+
   async function fetchSessions() {
     try {
       const response = await api.get<ChatSession[]>('/chat/sessions')
@@ -179,11 +186,11 @@ export const useChatStore = defineStore('chat', () => {
         // Get the reactive message object from the array
         const reactiveAiMessage = messages.value.find(m => m.id === aiMsgId)
 
-        const response = await fetch('/api/chat/stream', {
+        const response = await fetch(buildApiUrl('/chat/stream'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authStore.token}`
+            ...(authStore.token ? { 'Authorization': `Bearer ${authStore.token}` } : {})
           },
           body: JSON.stringify({
             message: content,
